@@ -1,6 +1,6 @@
 package com.sirolf2009.muse.ui
 
-import com.fxgraph.layout.RandomLayout
+import com.fxgraph.layout.AbegoTreeLayout
 import com.sirolf2009.muse.core.MStream
 import com.sirolf2009.muse.core.MStreamBuilder
 import java.net.InetAddress
@@ -10,8 +10,8 @@ import javafx.scene.Scene
 import javafx.stage.Stage
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serdes
-import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
+import com.fxgraph.graph.Graph
 
 class MuseUI extends Application {
 	
@@ -29,23 +29,19 @@ class MuseUI extends Application {
 			put(StreamsConfig.consumerPrefix(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "earliest");
 			put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 		]
-		val builder = new MStreamBuilder()
+		val builder = new MStreamBuilder(props)
 		
 		val MStream<Long, Double> stream = builder.stream("prices")
 		stream.mapValues[it * 2].mapValues[it / 2].foreach[key, value| println('''«key», «value»''')]
 		stream.mapValues[it * 2].mapValues[it / 2].foreach[key, value|]
 		
-//		val MStream<String, Integer> stream2 = builder.stream("random")
-//		stream2.mapValues[it * 2].mapValues[it / 2].foreach[key, value|]
+		val MStream<String, Integer> stream2 = builder.stream("random")
+		stream2.mapValues[it * 2].mapValues[it / 2].foreach[key, value|]
 		
-		val topology = builder.build()
-		val streams = new KafkaStreams(topology, props)
-		streams.cleanUp()
-		streams.start()
-		Runtime.getRuntime().addShutdownHook(new Thread[streams.close()])
-    	val graph = builder.getGraph()
+		val streams = builder.build()
+		streams.cleanUpAndStart()
+    	val graph = new Graph(streams.getModel())
     	graph.endUpdate()
-    	graph.layout(new RandomLayout())
 
         val scene = new Scene(graph.getScrollPane(), 1200, 600)
 		scene.getStylesheets().add(getClass().getResource("/application.css").toExternalForm())
@@ -53,6 +49,8 @@ class MuseUI extends Application {
         stage.setTitle("Hello JavaFX and Maven")
         stage.setScene(scene)
         stage.show()
+        
+    	graph.layout(new AbegoTreeLayout())
     }
 	
 }

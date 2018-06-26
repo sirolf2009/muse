@@ -8,12 +8,7 @@
 }
 
 .cell {
-    -fx-border-color: black;
+    -fx-border-color: #333333;
     -fx-background-color: white;
     -fx-border-width: 2px;
-}
-.edge-text .content {
-    -fx-border-color: black;
-    -fx-background-color: white;
-    -fx-border-width: 100px;
 }

@@ -13,7 +13,6 @@ import org.apache.kafka.common.serialization.DoubleSerializer
 import org.apache.kafka.common.serialization.LongDeserializer
 import org.apache.kafka.common.serialization.LongSerializer
 import org.apache.kafka.common.serialization.Serdes
-import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
 
 class StreamTest {
@@ -31,27 +30,14 @@ class StreamTest {
 			put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.Long().getClass().getName());
 			put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.Double().getClass().getName());
 		]
-		val builder = new MStreamBuilder()
+		val builder = new MStreamBuilder(props)
 		val MStream<Long, Double> stream = builder.stream("prices")
 //		stream.selectKey[key, value|value].groupByKey(Serialized.with(Serdes.Double(), Serdes.Double())).count().toStream().to("counts", Produced.with(Serdes.Double(), Serdes.Long()))
 		val doubleStream = stream.mapValues[it * 2]
 		val quadStream = doubleStream.mapValues[it * 4]
 		quadStream.foreach[key, value|println("Quad: " + key -> value +" "+quadStream.class)]
-		val topology = builder.build()
-		val streams = new KafkaStreams(topology, props)
-		streams.cleanUp()
-		streams.start()
-		topology.describe().subtopologies.get(0).nodes.forEach [ it, index |
-			println("node " + index + ": " + it)
-		]
-		while(true) {
-			streams.metrics().entrySet().forEach[println(it)]
-//			topology.describe().subtopologies.get(0).nodes.forEach[it,index|
-//				println("node "+index+": "+it)
-//			]
-//			streams.allMetadata.forEach[println("Meta: " + it)]
-			Thread.sleep(10000)
-		}
+		val streams = builder.build()
+		streams.cleanUpAndStart()
 	}
 
 	def static consumer() {
