@@ -1,9 +1,7 @@
 package com.sirolf2009.muse.core
 
-import com.fxgraph.graph.Cell
 import com.fxgraph.graph.Graph
 import com.sirolf2009.muse.core.processor.MuseHookProcessor
-import io.reactivex.schedulers.Schedulers
 import java.util.Optional
 import java.util.Set
 import javafx.application.Platform
@@ -16,19 +14,21 @@ import org.apache.kafka.streams.kstream.internals.AbstractStream
 import org.apache.kafka.streams.kstream.internals.InternalStreamsBuilder
 import org.apache.kafka.streams.kstream.internals.KStreamImpl
 import org.apache.kafka.streams.processor.internals.InternalTopologyBuilder
+import com.fxgraph.graph.ICell
+import org.apache.kafka.streams.kstream.Predicate
 
 class MStream<K, V> extends KStreamImpl<K, V> {
 
 	val Graph graph
-	val Optional<Cell> predecessor
+	val Optional<ICell> predecessor
 
-	new(KStream<K, V> stream, Graph graph, Optional<Cell> predecessor) {
+	new(KStream<K, V> stream, Graph graph, Optional<ICell> predecessor) {
 		super(stream.getBuilder(), stream.getName(), stream.getSourceNodes(), true)
 		this.graph = graph
 		this.predecessor = predecessor
 	}
 
-	new(InternalStreamsBuilder builder, String name, Set<String> sourceNodes, boolean repartitionRequired, Graph graph, Optional<Cell> predecessor) {
+	new(InternalStreamsBuilder builder, String name, Set<String> sourceNodes, boolean repartitionRequired, Graph graph, Optional<ICell> predecessor) {
 		super(builder, name, sourceNodes, repartitionRequired)
 		this.graph = graph
 		this.predecessor = predecessor
@@ -51,16 +51,24 @@ class MStream<K, V> extends KStreamImpl<K, V> {
 		super.foreach(action)
 	}
 	
-	def addHook(String name) {
+	override filter(Predicate<? super K, ? super V> predicate) {
+		val cell = addHook("filter")
+		val superStream = super.filter(predicate)
+		return new MStream(builder, superStream.getName(), superStream.getSourceNodes(), superStream.isRepartitionRequired, graph, Optional.of(cell))
+	}
+	
+	def ICell addHook(String name) {
 		val hook = new MuseHookProcessor<K, V>()
 		builder.internalTopologyBuilder.addProcessor(builder.newProcessorName("MUSE"), [hook], this.getName())
 		val cell = new TextCell(name)
 		graph.getModel().addCell(cell)
 		predecessor.ifPresent [
-			graph.getModel().addEdge(new MuseEdge(graph, it, cell) => [edge|
-				hook.getSubject().map[toString()].observeOn(Schedulers.io).subscribe [value|
+			graph.getModel().addEdge(new MuseEdge(it, cell) => [edge|
+				hook.getMessage().addListener[
+					val message = hook.getMessage().get()
+					val display = message.getKey()+"\n"+message.getValue()
 					Platform.runLater[
-						edge.textProperty().set(value.toString())
+						edge.textProperty().set(display)
 					]
 				]
 			])

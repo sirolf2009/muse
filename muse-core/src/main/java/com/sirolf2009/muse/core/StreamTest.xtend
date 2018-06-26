@@ -1,10 +1,5 @@
 package com.sirolf2009.muse.core
 
-import com.github.jnidzwetzki.bitfinex.v2.BitfinexApiBroker
-import com.github.jnidzwetzki.bitfinex.v2.entity.BitfinexCurrencyPair
-import com.github.jnidzwetzki.bitfinex.v2.entity.symbol.BitfinexTickerSymbol
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 import java.net.InetAddress
 import java.util.Properties
 import java.util.Random
@@ -79,26 +74,6 @@ class StreamTest {
 		}
 	}
 
-	def static producer() {
-		println("producer")
-		val props = new Properties() => [
-			put(ProducerConfig.CLIENT_ID_CONFIG, InetAddress.getLocalHost().getHostName())
-			put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
-			put(ProducerConfig.ACKS_CONFIG, "all")
-			put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.getName());
-			put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, DoubleSerializer.getName());
-		]
-		val producer = new KafkaProducer<Long, Double>(props)
-		new BitfinexApiBroker() => [
-			connect()
-			subscribe(BitfinexCurrencyPair.BTC_USD).subscribe [
-				println(getTimestamp() + ", " + getClose().doubleValue())
-				producer.send(new ProducerRecord<Long, Double>("prices", getTimestamp(), getClose().doubleValue()))
-			]
-		]
-		Thread.sleep(1000)
-	}
-
 	def static producerRandom() {
 		println("producer-random")
 		val props = new Properties() => [
@@ -115,27 +90,6 @@ class StreamTest {
 			println("send")
 			Thread.sleep(100)
 		}
-	}
-
-	def static subscribe(BitfinexApiBroker broker, BitfinexCurrencyPair symbol) {
-		subscribe(broker, new BitfinexTickerSymbol(symbol))
-	}
-
-	def static subscribe(BitfinexApiBroker broker, BitfinexTickerSymbol symbol) {
-		broker.getQuoteManager().subscribeTicker(symbol)
-		Observable.create [
-			try {
-				while(!broker.isTickerActive(symbol)) {
-					println("sleep")
-					Thread.sleep(100)
-				}
-				broker.getQuoteManager().registerTickCallback(symbol) [ symbol2, tick |
-					onNext(tick)
-				]
-			} catch(Exception e) {
-				onError(e)
-			}
-		].subscribeOn(Schedulers.io)
 	}
 
 }
