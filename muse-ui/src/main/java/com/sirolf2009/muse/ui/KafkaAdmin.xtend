@@ -20,7 +20,6 @@ import com.sirolf2009.muse.ui.kafka.TopicUpdate
 	val File baseDirectory
 
 	/**
-	 * Note: This will not show information about old Zookeeper-based consumers.
 
 	 * TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                     HOST            CLIENT-ID
 	 * counts          0          0               0               0               workstation-e9f920d2-f3f6-4953-8185-7850e6c255ad /127.0.0.1      workstation

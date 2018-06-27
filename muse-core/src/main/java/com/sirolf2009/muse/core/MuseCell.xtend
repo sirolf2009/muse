@@ -36,4 +36,8 @@ import org.eclipse.xtend.lib.annotations.Data
 		]
 	}
 	
+	override toString() {
+		return textProperty.get()
+	}
+	
 }

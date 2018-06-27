@@ -4,6 +4,9 @@ import com.sirolf2009.muse.core.model.Graph
 import org.apache.avro.specific.SpecificDatumWriter
 import java.io.ByteArrayOutputStream
 import org.apache.avro.io.EncoderFactory
+import org.apache.avro.specific.SpecificDatumReader
+import java.io.ByteArrayInputStream
+import org.apache.avro.io.DecoderFactory
 
 class AvroExtensions {
 	
@@ -14,6 +17,13 @@ class AvroExtensions {
 		writer.write(graph, encoder)
 		encoder.flush()
 		return out.toByteArray()
+	}
+	
+	def static toGraph(byte[] bytes) {
+		val reader = new SpecificDatumReader(Graph.SCHEMA$)
+		val in = new ByteArrayInputStream(bytes)
+		val decoder = new DecoderFactory().binaryDecoder(in, null)
+		return reader.read(null, decoder) as Graph
 	}
 	
 }

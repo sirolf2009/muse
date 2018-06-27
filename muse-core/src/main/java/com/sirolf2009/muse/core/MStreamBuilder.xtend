@@ -14,6 +14,7 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.StreamsConfig
 import org.eclipse.xtend.lib.annotations.Accessors
+import static com.sirolf2009.muse.core.Constants.GRAPH_QUEUE
 
 import static extension com.sirolf2009.muse.core.AvroExtensions.*
 import static extension com.sirolf2009.muse.core.ModelToGraph.*
@@ -51,7 +52,7 @@ class MStreamBuilder {
 		val topology = streamsBuilder.build()
 		val graph = model.toGraph(properties.get(StreamsConfig.APPLICATION_ID_CONFIG) as String)
 		val producer = new KafkaProducer<String, byte[]>(properties, Serdes.String().serializer(), Serdes.ByteArray().serializer())
-		producer.send(new ProducerRecord<String, byte[]>("MUSE-APPLICATION-GRAPHS", graph.toBytes())).get()
+		producer.send(new ProducerRecord<String, byte[]>(GRAPH_QUEUE, graph.toBytes())).get()
 		producer.close()
 		return new MStreams(properties, model, graph, topology, new KafkaStreams(topology, properties))
 	}
