@@ -18,7 +18,7 @@ import org.apache.kafka.streams.StreamsConfig
 class StreamTest {
 
 	def static void main(String[] args) {
-		producerRandom()
+		consumer()
 	}
 
 	def static stream() {

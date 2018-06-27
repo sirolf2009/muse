@@ -1,5 +1,6 @@
 package com.sirolf2009.muse.ui
 
+import com.fxgraph.graph.Graph
 import com.fxgraph.layout.AbegoTreeLayout
 import com.sirolf2009.muse.core.MStream
 import com.sirolf2009.muse.core.MStreamBuilder
@@ -11,7 +12,7 @@ import javafx.stage.Stage
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsConfig
-import com.fxgraph.graph.Graph
+import org.apache.kafka.clients.admin.AdminClient
 
 class MuseUI extends Application {
 	
@@ -30,7 +31,7 @@ class MuseUI extends Application {
 			put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 		]
 		val builder = new MStreamBuilder(props)
-		
+		val topics = AdminClient.create(props).describeTopics(#["prices"])
 		val MStream<Long, Double> stream = builder.stream("prices")
 		stream.mapValues[it * 2].mapValues[it / 2].foreach[key, value| println('''«key», «value»''')]
 		stream.mapValues[it * 2].mapValues[it / 2].foreach[key, value|]
