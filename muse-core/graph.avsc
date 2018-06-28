@@ -1,0 +1,62 @@
+{
+  "namespace": "com.sirolf2009.muse.core.model",
+  "type": "record",
+  "name": "Graph",
+  "fields": [
+    {
+      "name": "ID",
+      "type": "string"
+    },
+    {
+      "name": "Name",
+      "type": "string"
+    },
+    {
+      "name": "mapping",
+      "type": {
+        "type": "array",
+        "items": {
+          "name": "Edge",
+          "type": "record",
+          "fields": [
+            {
+              "name": "key",
+              "type": "string"
+            },
+            {
+              "name": "value",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "children",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "Node",
+          "fields": [
+            {
+              "name": "ID",
+              "type": "string"
+            },
+            {
+              "name": "Name",
+              "type": "string"
+            },
+            {
+              "name": "children",
+              "type": {
+                "type": "array",
+                "items": "string"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
