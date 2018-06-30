@@ -57,6 +57,14 @@ green     #859900  2/2 green     64 #5f8700 60 -20  65 133 153   0  68 100  60
  	-fx-background-color:#073642; 
  	-fx-text-fill: #839496;
 }
+.toggle-button {
+ 	-fx-background-color:#002b36; 
+ 	-fx-text-fill: #839496;
+}
+.toggle-button:selected {
+ 	-fx-background-color:#073642; 
+ 	-fx-text-fill: #839496;
+}
 .menu-bar {
     -fx-background-color: #002b36;
 }

@@ -11,6 +11,9 @@ class MainController {
 	@FXML
 	def void initialize() {
 		openConnectionManager()
+		contentTabPane.getTabs().add(new Tab("Connection", new ConnectionController()) => [
+			contentTabPane.getSelectionModel().select(it)
+		])
 	}
 	
 	def void openConnectionManager() {
