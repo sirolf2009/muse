@@ -16,8 +16,8 @@
               <items>
                   <FlowPane fx:id="commandPane" prefHeight="200.0" prefWidth="200.0" styleClass="solarized-background">
                      <children>
-                        <ToggleButton mnemonicParsing="false" styleClass="solarized-background" text="Reset Offset" />
-                        <ToggleButton mnemonicParsing="false" styleClass="solarized-background" text="Layout Graph" />
+                        <ToggleButton mnemonicParsing="false" text="Reset Offset" />
+                        <ToggleButton mnemonicParsing="false" text="Layout Graph" />
                      </children>
                   </FlowPane>
                   <AnchorPane fx:id="commandDetailPane" prefHeight="200.0" prefWidth="200.0" styleClass="solarized-background" />

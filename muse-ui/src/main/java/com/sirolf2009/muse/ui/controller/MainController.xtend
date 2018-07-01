@@ -1,8 +1,8 @@
 package com.sirolf2009.muse.ui.controller
 
 import javafx.fxml.FXML
-import javafx.scene.control.TabPane
 import javafx.scene.control.Tab
+import javafx.scene.control.TabPane
 
 class MainController {
 	
