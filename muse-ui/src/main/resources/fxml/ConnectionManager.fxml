@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<fx:root prefWidth="1200.0" type="AnchorPane" xmlns="http://javafx.com/javafx/8.0.172" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox prefWidth="100.0" spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <TitledPane styleClass="solarized-background-highlight" text="New Connection">
+               <content>
+                  <VBox spacing="8.0" styleClass="solarized-background">
+                     <children>
+                        <GridPane styleClass="contentpane" VBox.vgrow="ALWAYS">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="NEVER" maxWidth="583.0" minWidth="10.0" prefWidth="165.0" />
+                            <ColumnConstraints hgrow="ALWAYS" maxWidth="1013.0" minWidth="10.0" prefWidth="1013.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="Bootstrap Server" GridPane.rowIndex="1" />
+                              <TextField fx:id="bootstrapServer" promptText="localhost:9092" text="localhost:9092" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <TextField fx:id="clientID" promptText="Muse" text="Muse" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label text="Client ID" GridPane.rowIndex="2" />
+                              <Label text="Name" />
+                              <TextField fx:id="connectionName" promptText="New Connection" text="New Connection" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
+                           </children>
+                        </GridPane>
+                        <Separator prefWidth="200.0" styleClass="solarized-background-highlight" />
+                        <GridPane>
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Button mnemonicParsing="false" text="Test Connection" />
+                           </children>
+                        </GridPane>
+                        <Separator prefWidth="200.0" styleClass="solarized-background-highlight" />
+                        <ButtonBar prefHeight="40.0" prefWidth="200.0">
+                          <buttons>
+                              <Button fx:id="saveAndConnect" mnemonicParsing="false" text="Save and connect" />
+                              <Button fx:id="save" mnemonicParsing="false" text="Save" />
+                              <Button fx:id="connect" mnemonicParsing="false" text="Connect" />
+                          </buttons>
+                        </ButtonBar>
+                     </children>
+                  </VBox>
+               </content>
+            </TitledPane>
+            <TitledPane animated="false" styleClass="solarized-background-highlight" text="Saved Connections">
+               <content>
+                  <ListView fx:id="savedConnections" prefHeight="200.0" prefWidth="200.0" styleClass="solarized-background" />
+               </content>
+            </TitledPane>
+         </children>
+         <padding>
+            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+         </padding>
+      </VBox>
+   </children>
+</fx:root>

@@ -6,6 +6,8 @@ import com.sirolf2009.muse.ui.model.Connection
 import com.sirolf2009.muse.ui.properties.LocalProperties
 import javafx.application.Application
 import javafx.application.Platform
+import javafx.fxml.FXMLLoader
+import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.VBox
@@ -31,8 +33,11 @@ class MuseUI extends Application {
 			]
 		]
 		conn.start()
-
-		val scene = new Scene(sceneRoot, 1200, 600)
+    	
+    	val loader = new FXMLLoader()
+        val rootNode = loader.load(getClass().getResourceAsStream("/fxml/Main.fxml")) as Parent
+    	
+        val scene = new Scene(rootNode, 1200, 600)
 		scene.getStylesheets().add(getClass().getResource("/application.css").toExternalForm())
 
 		stage.setTitle("Hello JavaFX and Maven")

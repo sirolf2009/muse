@@ -1,0 +1,22 @@
+{
+  "namespace": "com.sirolf2009.muse.ui.model",
+  "type": "record",
+  "name": "ConnectionDetails",
+  "fields": [
+    {
+      "name": "Name",
+      "type": "string"
+    },
+    {
+      "name": "BootstrapServers",
+      "type": {
+      	"type": "array",
+      	"items": "string"
+      }
+    },
+    {
+      "name": "clientID",
+      "type": "string"
+    }
+  ]
+}

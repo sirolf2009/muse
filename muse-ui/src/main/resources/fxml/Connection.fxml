@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.canvas.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<fx:root type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.172">
+   <children>
+      <SplitPane dividerPositions="0.8193493150684932" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <items>
+            <StackPane fx:id="canvasContainer" prefHeight="800.0" prefWidth="1000.0" />
+            <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+              <items>
+                  <FlowPane fx:id="commandPane" prefHeight="200.0" prefWidth="200.0" styleClass="solarized-background">
+                     <children>
+                        <ToggleButton mnemonicParsing="false" text="Reset Offset" />
+                        <ToggleButton mnemonicParsing="false" text="Layout Graph" />
+                     </children>
+                  </FlowPane>
+                  <AnchorPane fx:id="commandDetailPane" prefHeight="200.0" prefWidth="200.0" styleClass="solarized-background" />
+              </items>
+            </SplitPane>
+         </items>
+      </SplitPane>
+   </children>
+</fx:root>
