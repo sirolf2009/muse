@@ -12,23 +12,23 @@ import org.apache.avro.message.SchemaStore;
 
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class Node extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -7344668866778520683L;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Node\",\"namespace\":\"com.sirolf2009.muse.core.model\",\"fields\":[{\"name\":\"ID\",\"type\":\"string\"},{\"name\":\"Name\",\"type\":\"string\"},{\"name\":\"children\",\"type\":{\"type\":\"array\",\"items\":\"string\"}}]}");
+public class OperationNode extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
+  private static final long serialVersionUID = 8924526636986976226L;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"OperationNode\",\"namespace\":\"com.sirolf2009.muse.core.model\",\"fields\":[{\"name\":\"ID\",\"type\":\"string\"},{\"name\":\"Name\",\"type\":\"string\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static SpecificData MODEL$ = new SpecificData();
 
-  private static final BinaryMessageEncoder<Node> ENCODER =
-      new BinaryMessageEncoder<Node>(MODEL$, SCHEMA$);
+  private static final BinaryMessageEncoder<OperationNode> ENCODER =
+      new BinaryMessageEncoder<OperationNode>(MODEL$, SCHEMA$);
 
-  private static final BinaryMessageDecoder<Node> DECODER =
-      new BinaryMessageDecoder<Node>(MODEL$, SCHEMA$);
+  private static final BinaryMessageDecoder<OperationNode> DECODER =
+      new BinaryMessageDecoder<OperationNode>(MODEL$, SCHEMA$);
 
   /**
    * Return the BinaryMessageDecoder instance used by this class.
    */
-  public static BinaryMessageDecoder<Node> getDecoder() {
+  public static BinaryMessageDecoder<OperationNode> getDecoder() {
     return DECODER;
   }
 
@@ -36,42 +36,39 @@ public class Node extends org.apache.avro.specific.SpecificRecordBase implements
    * Create a new BinaryMessageDecoder instance for this class that uses the specified {@link SchemaStore}.
    * @param resolver a {@link SchemaStore} used to find schemas by fingerprint
    */
-  public static BinaryMessageDecoder<Node> createDecoder(SchemaStore resolver) {
-    return new BinaryMessageDecoder<Node>(MODEL$, SCHEMA$, resolver);
+  public static BinaryMessageDecoder<OperationNode> createDecoder(SchemaStore resolver) {
+    return new BinaryMessageDecoder<OperationNode>(MODEL$, SCHEMA$, resolver);
   }
 
-  /** Serializes this Node to a ByteBuffer. */
+  /** Serializes this OperationNode to a ByteBuffer. */
   public java.nio.ByteBuffer toByteBuffer() throws java.io.IOException {
     return ENCODER.encode(this);
   }
 
-  /** Deserializes a Node from a ByteBuffer. */
-  public static Node fromByteBuffer(
+  /** Deserializes a OperationNode from a ByteBuffer. */
+  public static OperationNode fromByteBuffer(
       java.nio.ByteBuffer b) throws java.io.IOException {
     return DECODER.decode(b);
   }
 
   @Deprecated public java.lang.CharSequence ID;
   @Deprecated public java.lang.CharSequence Name;
-  @Deprecated public java.util.List<java.lang.CharSequence> children;
 
   /**
    * Default constructor.  Note that this does not initialize fields
    * to their default values from the schema.  If that is desired then
    * one should use <code>newBuilder()</code>.
    */
-  public Node() {}
+  public OperationNode() {}
 
   /**
    * All-args constructor.
    * @param ID The new value for ID
    * @param Name The new value for Name
-   * @param children The new value for children
    */
-  public Node(java.lang.CharSequence ID, java.lang.CharSequence Name, java.util.List<java.lang.CharSequence> children) {
+  public OperationNode(java.lang.CharSequence ID, java.lang.CharSequence Name) {
     this.ID = ID;
     this.Name = Name;
-    this.children = children;
   }
 
   public org.apache.avro.Schema getSchema() { return SCHEMA$; }
@@ -80,7 +77,6 @@ public class Node extends org.apache.avro.specific.SpecificRecordBase implements
     switch (field$) {
     case 0: return ID;
     case 1: return Name;
-    case 2: return children;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -91,7 +87,6 @@ public class Node extends org.apache.avro.specific.SpecificRecordBase implements
     switch (field$) {
     case 0: ID = (java.lang.CharSequence)value$; break;
     case 1: Name = (java.lang.CharSequence)value$; break;
-    case 2: children = (java.util.List<java.lang.CharSequence>)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -129,56 +124,39 @@ public class Node extends org.apache.avro.specific.SpecificRecordBase implements
   }
 
   /**
-   * Gets the value of the 'children' field.
-   * @return The value of the 'children' field.
+   * Creates a new OperationNode RecordBuilder.
+   * @return A new OperationNode RecordBuilder
    */
-  public java.util.List<java.lang.CharSequence> getChildren() {
-    return children;
+  public static com.sirolf2009.muse.core.model.OperationNode.Builder newBuilder() {
+    return new com.sirolf2009.muse.core.model.OperationNode.Builder();
   }
 
   /**
-   * Sets the value of the 'children' field.
-   * @param value the value to set.
-   */
-  public void setChildren(java.util.List<java.lang.CharSequence> value) {
-    this.children = value;
-  }
-
-  /**
-   * Creates a new Node RecordBuilder.
-   * @return A new Node RecordBuilder
-   */
-  public static com.sirolf2009.muse.core.model.Node.Builder newBuilder() {
-    return new com.sirolf2009.muse.core.model.Node.Builder();
-  }
-
-  /**
-   * Creates a new Node RecordBuilder by copying an existing Builder.
+   * Creates a new OperationNode RecordBuilder by copying an existing Builder.
    * @param other The existing builder to copy.
-   * @return A new Node RecordBuilder
+   * @return A new OperationNode RecordBuilder
    */
-  public static com.sirolf2009.muse.core.model.Node.Builder newBuilder(com.sirolf2009.muse.core.model.Node.Builder other) {
-    return new com.sirolf2009.muse.core.model.Node.Builder(other);
+  public static com.sirolf2009.muse.core.model.OperationNode.Builder newBuilder(com.sirolf2009.muse.core.model.OperationNode.Builder other) {
+    return new com.sirolf2009.muse.core.model.OperationNode.Builder(other);
   }
 
   /**
-   * Creates a new Node RecordBuilder by copying an existing Node instance.
+   * Creates a new OperationNode RecordBuilder by copying an existing OperationNode instance.
    * @param other The existing instance to copy.
-   * @return A new Node RecordBuilder
+   * @return A new OperationNode RecordBuilder
    */
-  public static com.sirolf2009.muse.core.model.Node.Builder newBuilder(com.sirolf2009.muse.core.model.Node other) {
-    return new com.sirolf2009.muse.core.model.Node.Builder(other);
+  public static com.sirolf2009.muse.core.model.OperationNode.Builder newBuilder(com.sirolf2009.muse.core.model.OperationNode other) {
+    return new com.sirolf2009.muse.core.model.OperationNode.Builder(other);
   }
 
   /**
-   * RecordBuilder for Node instances.
+   * RecordBuilder for OperationNode instances.
    */
-  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<Node>
-    implements org.apache.avro.data.RecordBuilder<Node> {
+  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<OperationNode>
+    implements org.apache.avro.data.RecordBuilder<OperationNode> {
 
     private java.lang.CharSequence ID;
     private java.lang.CharSequence Name;
-    private java.util.List<java.lang.CharSequence> children;
 
     /** Creates a new Builder */
     private Builder() {
@@ -189,7 +167,7 @@ public class Node extends org.apache.avro.specific.SpecificRecordBase implements
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(com.sirolf2009.muse.core.model.Node.Builder other) {
+    private Builder(com.sirolf2009.muse.core.model.OperationNode.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.ID)) {
         this.ID = data().deepCopy(fields()[0].schema(), other.ID);
@@ -199,17 +177,13 @@ public class Node extends org.apache.avro.specific.SpecificRecordBase implements
         this.Name = data().deepCopy(fields()[1].schema(), other.Name);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.children)) {
-        this.children = data().deepCopy(fields()[2].schema(), other.children);
-        fieldSetFlags()[2] = true;
-      }
     }
 
     /**
-     * Creates a Builder by copying an existing Node instance
+     * Creates a Builder by copying an existing OperationNode instance
      * @param other The existing instance to copy.
      */
-    private Builder(com.sirolf2009.muse.core.model.Node other) {
+    private Builder(com.sirolf2009.muse.core.model.OperationNode other) {
             super(SCHEMA$);
       if (isValidValue(fields()[0], other.ID)) {
         this.ID = data().deepCopy(fields()[0].schema(), other.ID);
@@ -218,10 +192,6 @@ public class Node extends org.apache.avro.specific.SpecificRecordBase implements
       if (isValidValue(fields()[1], other.Name)) {
         this.Name = data().deepCopy(fields()[1].schema(), other.Name);
         fieldSetFlags()[1] = true;
-      }
-      if (isValidValue(fields()[2], other.children)) {
-        this.children = data().deepCopy(fields()[2].schema(), other.children);
-        fieldSetFlags()[2] = true;
       }
     }
 
@@ -238,7 +208,7 @@ public class Node extends org.apache.avro.specific.SpecificRecordBase implements
       * @param value The value of 'ID'.
       * @return This builder.
       */
-    public com.sirolf2009.muse.core.model.Node.Builder setID(java.lang.CharSequence value) {
+    public com.sirolf2009.muse.core.model.OperationNode.Builder setID(java.lang.CharSequence value) {
       validate(fields()[0], value);
       this.ID = value;
       fieldSetFlags()[0] = true;
@@ -258,7 +228,7 @@ public class Node extends org.apache.avro.specific.SpecificRecordBase implements
       * Clears the value of the 'ID' field.
       * @return This builder.
       */
-    public com.sirolf2009.muse.core.model.Node.Builder clearID() {
+    public com.sirolf2009.muse.core.model.OperationNode.Builder clearID() {
       ID = null;
       fieldSetFlags()[0] = false;
       return this;
@@ -277,7 +247,7 @@ public class Node extends org.apache.avro.specific.SpecificRecordBase implements
       * @param value The value of 'Name'.
       * @return This builder.
       */
-    public com.sirolf2009.muse.core.model.Node.Builder setName(java.lang.CharSequence value) {
+    public com.sirolf2009.muse.core.model.OperationNode.Builder setName(java.lang.CharSequence value) {
       validate(fields()[1], value);
       this.Name = value;
       fieldSetFlags()[1] = true;
@@ -297,59 +267,19 @@ public class Node extends org.apache.avro.specific.SpecificRecordBase implements
       * Clears the value of the 'Name' field.
       * @return This builder.
       */
-    public com.sirolf2009.muse.core.model.Node.Builder clearName() {
+    public com.sirolf2009.muse.core.model.OperationNode.Builder clearName() {
       Name = null;
       fieldSetFlags()[1] = false;
       return this;
     }
 
-    /**
-      * Gets the value of the 'children' field.
-      * @return The value.
-      */
-    public java.util.List<java.lang.CharSequence> getChildren() {
-      return children;
-    }
-
-    /**
-      * Sets the value of the 'children' field.
-      * @param value The value of 'children'.
-      * @return This builder.
-      */
-    public com.sirolf2009.muse.core.model.Node.Builder setChildren(java.util.List<java.lang.CharSequence> value) {
-      validate(fields()[2], value);
-      this.children = value;
-      fieldSetFlags()[2] = true;
-      return this;
-    }
-
-    /**
-      * Checks whether the 'children' field has been set.
-      * @return True if the 'children' field has been set, false otherwise.
-      */
-    public boolean hasChildren() {
-      return fieldSetFlags()[2];
-    }
-
-
-    /**
-      * Clears the value of the 'children' field.
-      * @return This builder.
-      */
-    public com.sirolf2009.muse.core.model.Node.Builder clearChildren() {
-      children = null;
-      fieldSetFlags()[2] = false;
-      return this;
-    }
-
     @Override
     @SuppressWarnings("unchecked")
-    public Node build() {
+    public OperationNode build() {
       try {
-        Node record = new Node();
+        OperationNode record = new OperationNode();
         record.ID = fieldSetFlags()[0] ? this.ID : (java.lang.CharSequence) defaultValue(fields()[0]);
         record.Name = fieldSetFlags()[1] ? this.Name : (java.lang.CharSequence) defaultValue(fields()[1]);
-        record.children = fieldSetFlags()[2] ? this.children : (java.util.List<java.lang.CharSequence>) defaultValue(fields()[2]);
         return record;
       } catch (java.lang.Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);
@@ -358,8 +288,8 @@ public class Node extends org.apache.avro.specific.SpecificRecordBase implements
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumWriter<Node>
-    WRITER$ = (org.apache.avro.io.DatumWriter<Node>)MODEL$.createDatumWriter(SCHEMA$);
+  private static final org.apache.avro.io.DatumWriter<OperationNode>
+    WRITER$ = (org.apache.avro.io.DatumWriter<OperationNode>)MODEL$.createDatumWriter(SCHEMA$);
 
   @Override public void writeExternal(java.io.ObjectOutput out)
     throws java.io.IOException {
@@ -367,8 +297,8 @@ public class Node extends org.apache.avro.specific.SpecificRecordBase implements
   }
 
   @SuppressWarnings("unchecked")
-  private static final org.apache.avro.io.DatumReader<Node>
-    READER$ = (org.apache.avro.io.DatumReader<Node>)MODEL$.createDatumReader(SCHEMA$);
+  private static final org.apache.avro.io.DatumReader<OperationNode>
+    READER$ = (org.apache.avro.io.DatumReader<OperationNode>)MODEL$.createDatumReader(SCHEMA$);
 
   @Override public void readExternal(java.io.ObjectInput in)
     throws java.io.IOException {

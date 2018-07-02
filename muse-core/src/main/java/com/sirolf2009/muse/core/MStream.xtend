@@ -1,11 +1,11 @@
 package com.sirolf2009.muse.core
 
-import com.fxgraph.graph.ICell
-import com.fxgraph.graph.Model
+import com.sirolf2009.muse.core.model.Edge
+import com.sirolf2009.muse.core.model.Graph
+import com.sirolf2009.muse.core.model.OperationNode
 import com.sirolf2009.muse.core.processor.MuseHookProcessor
-import java.util.Optional
 import java.util.Set
-import javafx.application.Platform
+import java.util.UUID
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.kstream.ForeachAction
 import org.apache.kafka.streams.kstream.KStream
@@ -16,65 +16,80 @@ import org.apache.kafka.streams.kstream.internals.AbstractStream
 import org.apache.kafka.streams.kstream.internals.InternalStreamsBuilder
 import org.apache.kafka.streams.kstream.internals.KStreamImpl
 import org.apache.kafka.streams.processor.internals.InternalTopologyBuilder
-import java.util.UUID
 
 class MStream<K, V> extends KStreamImpl<K, V> {
 
-	val Model model
-	val Optional<ICell> predecessor
+	val Graph graph
+	val CharSequence predecessor
 
-	new(KStream<K, V> stream, Model model, Optional<ICell> predecessor) {
+	new(KStream<K, V> stream, Graph graph, CharSequence predecessor) {
 		super(stream.getBuilder(), stream.getName(), stream.getSourceNodes(), true)
-		this.model = model
+		this.graph = graph
 		this.predecessor = predecessor
 	}
 
-	new(InternalStreamsBuilder builder, String name, Set<String> sourceNodes, boolean repartitionRequired, Model model, Optional<ICell> predecessor) {
+	new(InternalStreamsBuilder builder, String name, Set<String> sourceNodes, boolean repartitionRequired, Graph graph, CharSequence predecessor) {
 		super(builder, name, sourceNodes, repartitionRequired)
-		this.model = model
+		this.graph = graph
 		this.predecessor = predecessor
 	}
 
-	override <K1, V1> flatMap(KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends K1, ? extends V1>>> mapper) {
-		val cell = addHook("flatMap")
+	override <K1, V1> MStream<K1, V1> flatMap(KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends K1, ? extends V1>>> mapper) {
+		return flatMap("flatMap", mapper);
+	}
+	
+	def <K1, V1> MStream<K1, V1> flatMap(String name, KeyValueMapper<? super K, ? super V, ? extends Iterable<? extends KeyValue<? extends K1, ? extends V1>>> mapper) {
+		val node = addHook(name)
 		val superStream = super.<K1, V1>flatMap(mapper)
-		return new MStream(builder, superStream.getName(), superStream.getSourceNodes(), superStream.isRepartitionRequired, model, Optional.of(cell))
+		return new MStream(builder, superStream.getName(), superStream.getSourceNodes(), superStream.isRepartitionRequired, graph, node.getID())
 	}
 
-	override <V1> mapValues(ValueMapper<? super V, ? extends V1> mapper) {
-		val cell = addHook("mapValues")
+	override <V1> MStream<K, V1> mapValues(ValueMapper<? super V, ? extends V1> mapper) {
+		return mapValues("mapValues", mapper)
+	}
+	
+	override <V1> flatMapValues(ValueMapper<? super V, ? extends Iterable<? extends V1>> mapper) {
+		return flatMapValues("flatMapValues", mapper)
+	}
+	
+	def <V1> MStream<K, V1> flatMapValues(String name, ValueMapper<? super V, ? extends Iterable<? extends V1>> mapper) {
+		val node = addHook(name)
+		val superStream = super.<V1>flatMapValues(mapper)
+		return new MStream(builder, superStream.getName(), superStream.getSourceNodes(), superStream.isRepartitionRequired, graph, node.getID())
+	}
+	
+	def <V1> MStream<K, V1> mapValues(String name, ValueMapper<? super V, ? extends V1> mapper) {
+		val node = addHook(name)
 		val superStream = super.<V1>mapValues(mapper)
-		return new MStream(builder, superStream.getName(), superStream.getSourceNodes(), superStream.isRepartitionRequired, model, Optional.of(cell))
+		return new MStream(builder, superStream.getName(), superStream.getSourceNodes(), superStream.isRepartitionRequired, graph, node.getID())
 	}
 	
 	override foreach(ForeachAction<? super K, ? super V> action) {
-		addHook("forEach")
+		foreach("foreach", action)
+	}
+	
+	def void foreach(String name, ForeachAction<? super K, ? super V> action) {
+		addHook(name)
 		super.foreach(action)
 	}
 	
-	override filter(Predicate<? super K, ? super V> predicate) {
-		val cell = addHook("filter")
-		val superStream = super.filter(predicate)
-		return new MStream(builder, superStream.getName(), superStream.getSourceNodes(), superStream.isRepartitionRequired, model, Optional.of(cell))
+	override MStream<K, V> filter(Predicate<? super K, ? super V> predicate) {
+		return filter("filter", predicate)
 	}
 	
-	def ICell addHook(String name) {
+	def MStream<K, V> filter(String name, Predicate<? super K, ? super V> predicate) {
+		val node = addHook(name)
+		val superStream = super.filter(predicate)
+		return new MStream(builder, superStream.getName(), superStream.getSourceNodes(), superStream.isRepartitionRequired, graph, node.getID())
+	}
+	
+	def OperationNode addHook(String name) {
 		val hook = new MuseHookProcessor<K, V>()
 		builder.internalTopologyBuilder.addProcessor(builder.newProcessorName("MUSE"), [hook], this.getName())
-		val cell = new MuseCell(UUID.randomUUID(), name)
-		model.addCell(cell)
-		predecessor.ifPresent [
-			model.addEdge(new MuseEdge(it, cell) => [edge|
-				hook.getMessage().addListener[
-					val message = hook.getMessage().get()
-					val display = message.getKey()+"\n"+message.getValue()
-					Platform.runLater[
-						edge.textProperty().set(display)
-					]
-				]
-			])
-		]
-		return cell
+		val node = new OperationNode(UUID.randomUUID().toString(), name)
+		graph.getChildren().add(node)
+		graph.getMapping().add(new Edge(predecessor, node.getID()))
+		return node
 	}
 
 	def static getInternalTopologyBuilder(InternalStreamsBuilder builder) {

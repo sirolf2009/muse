@@ -1,0 +1,30 @@
+{
+  "namespace": "com.sirolf2009.muse.core.model",
+  "type": "record",
+  "name": "TopicsNode",
+  "fields": [
+    {
+      "name": "ID",
+      "type": "string"
+    },
+    {
+      "name": "Name",
+      "type": "string"
+    },
+    {
+      "name": "Topics",
+      "type": {
+      	"type": "array",
+      	"items": "string"
+      }
+    },
+    {
+      "name": "KeyDeserializer",
+      "type": "string"
+    },
+    {
+      "name": "ValueDeserializer",
+      "type": "string"
+    }
+  ]
+}

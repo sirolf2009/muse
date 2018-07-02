@@ -13,6 +13,7 @@ import static extension java.lang.Long.*
 import java.util.stream.Collectors
 import java.time.Duration
 import com.sirolf2009.muse.ui.kafka.TopicUpdate
+import java.net.InetAddress
 
 @FinalFieldsConstructor class KafkaAdmin {
 
@@ -69,7 +70,7 @@ import com.sirolf2009.muse.ui.kafka.TopicUpdate
 	}
 	
 	def static void main(String[] args) {
-		println(new KafkaAdmin("localhost:9092", new File("/opt/kafka_2.12-1.1.0")).resetTopicByDuration("group", "counts", Duration.ofHours(1)))
+		println(new KafkaAdmin("localhost:9092", new File("/opt/kafka_2.12-1.1.0")).resetTopicToLatest(InetAddress.localHost.toString, " MUSE-APPLICATION-GRAPHS"))
 	}
 
 }

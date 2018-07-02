@@ -13,8 +13,8 @@ import org.apache.avro.message.SchemaStore;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class Graph extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 477386835551739508L;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Graph\",\"namespace\":\"com.sirolf2009.muse.core.model\",\"fields\":[{\"name\":\"ID\",\"type\":\"string\"},{\"name\":\"Name\",\"type\":\"string\"},{\"name\":\"mapping\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Edge\",\"fields\":[{\"name\":\"key\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"string\"}]}}},{\"name\":\"children\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Node\",\"fields\":[{\"name\":\"ID\",\"type\":\"string\"},{\"name\":\"Name\",\"type\":\"string\"},{\"name\":\"children\",\"type\":{\"type\":\"array\",\"items\":\"string\"}}]}}}]}");
+  private static final long serialVersionUID = -8240184335756580975L;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Graph\",\"namespace\":\"com.sirolf2009.muse.core.model\",\"fields\":[{\"name\":\"ID\",\"type\":\"string\"},{\"name\":\"Name\",\"type\":\"string\"},{\"name\":\"mapping\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"Edge\",\"fields\":[{\"name\":\"key\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"string\"}]}}},{\"name\":\"children\",\"type\":{\"type\":\"array\",\"items\":[{\"type\":\"record\",\"name\":\"OperationNode\",\"fields\":[{\"name\":\"ID\",\"type\":\"string\"},{\"name\":\"Name\",\"type\":\"string\"}]},{\"type\":\"record\",\"name\":\"TopicNode\",\"fields\":[{\"name\":\"ID\",\"type\":\"string\"},{\"name\":\"Name\",\"type\":\"string\"},{\"name\":\"Topic\",\"type\":\"string\"},{\"name\":\"KeyDeserializer\",\"type\":\"string\"},{\"name\":\"ValueDeserializer\",\"type\":\"string\"}]}]}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static SpecificData MODEL$ = new SpecificData();
@@ -54,7 +54,7 @@ public class Graph extends org.apache.avro.specific.SpecificRecordBase implement
   @Deprecated public java.lang.CharSequence ID;
   @Deprecated public java.lang.CharSequence Name;
   @Deprecated public java.util.List<com.sirolf2009.muse.core.model.Edge> mapping;
-  @Deprecated public java.util.List<com.sirolf2009.muse.core.model.Node> children;
+  @Deprecated public java.util.List<java.lang.Object> children;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -70,7 +70,7 @@ public class Graph extends org.apache.avro.specific.SpecificRecordBase implement
    * @param mapping The new value for mapping
    * @param children The new value for children
    */
-  public Graph(java.lang.CharSequence ID, java.lang.CharSequence Name, java.util.List<com.sirolf2009.muse.core.model.Edge> mapping, java.util.List<com.sirolf2009.muse.core.model.Node> children) {
+  public Graph(java.lang.CharSequence ID, java.lang.CharSequence Name, java.util.List<com.sirolf2009.muse.core.model.Edge> mapping, java.util.List<java.lang.Object> children) {
     this.ID = ID;
     this.Name = Name;
     this.mapping = mapping;
@@ -96,7 +96,7 @@ public class Graph extends org.apache.avro.specific.SpecificRecordBase implement
     case 0: ID = (java.lang.CharSequence)value$; break;
     case 1: Name = (java.lang.CharSequence)value$; break;
     case 2: mapping = (java.util.List<com.sirolf2009.muse.core.model.Edge>)value$; break;
-    case 3: children = (java.util.List<com.sirolf2009.muse.core.model.Node>)value$; break;
+    case 3: children = (java.util.List<java.lang.Object>)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -153,7 +153,7 @@ public class Graph extends org.apache.avro.specific.SpecificRecordBase implement
    * Gets the value of the 'children' field.
    * @return The value of the 'children' field.
    */
-  public java.util.List<com.sirolf2009.muse.core.model.Node> getChildren() {
+  public java.util.List<java.lang.Object> getChildren() {
     return children;
   }
 
@@ -161,7 +161,7 @@ public class Graph extends org.apache.avro.specific.SpecificRecordBase implement
    * Sets the value of the 'children' field.
    * @param value the value to set.
    */
-  public void setChildren(java.util.List<com.sirolf2009.muse.core.model.Node> value) {
+  public void setChildren(java.util.List<java.lang.Object> value) {
     this.children = value;
   }
 
@@ -200,7 +200,7 @@ public class Graph extends org.apache.avro.specific.SpecificRecordBase implement
     private java.lang.CharSequence ID;
     private java.lang.CharSequence Name;
     private java.util.List<com.sirolf2009.muse.core.model.Edge> mapping;
-    private java.util.List<com.sirolf2009.muse.core.model.Node> children;
+    private java.util.List<java.lang.Object> children;
 
     /** Creates a new Builder */
     private Builder() {
@@ -376,7 +376,7 @@ public class Graph extends org.apache.avro.specific.SpecificRecordBase implement
       * Gets the value of the 'children' field.
       * @return The value.
       */
-    public java.util.List<com.sirolf2009.muse.core.model.Node> getChildren() {
+    public java.util.List<java.lang.Object> getChildren() {
       return children;
     }
 
@@ -385,7 +385,7 @@ public class Graph extends org.apache.avro.specific.SpecificRecordBase implement
       * @param value The value of 'children'.
       * @return This builder.
       */
-    public com.sirolf2009.muse.core.model.Graph.Builder setChildren(java.util.List<com.sirolf2009.muse.core.model.Node> value) {
+    public com.sirolf2009.muse.core.model.Graph.Builder setChildren(java.util.List<java.lang.Object> value) {
       validate(fields()[3], value);
       this.children = value;
       fieldSetFlags()[3] = true;
@@ -419,7 +419,7 @@ public class Graph extends org.apache.avro.specific.SpecificRecordBase implement
         record.ID = fieldSetFlags()[0] ? this.ID : (java.lang.CharSequence) defaultValue(fields()[0]);
         record.Name = fieldSetFlags()[1] ? this.Name : (java.lang.CharSequence) defaultValue(fields()[1]);
         record.mapping = fieldSetFlags()[2] ? this.mapping : (java.util.List<com.sirolf2009.muse.core.model.Edge>) defaultValue(fields()[2]);
-        record.children = fieldSetFlags()[3] ? this.children : (java.util.List<com.sirolf2009.muse.core.model.Node>) defaultValue(fields()[3]);
+        record.children = fieldSetFlags()[3] ? this.children : (java.util.List<java.lang.Object>) defaultValue(fields()[3]);
         return record;
       } catch (java.lang.Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);

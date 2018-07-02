@@ -1,2 +1,2 @@
 #!/bin/bash
-avro compile schema OperationNode.avsc TopicNode.avsc Graph.avsc  ../java/
+avro compile schema OperationNode.avsc TopicNode.avsc TopicsNode.avsc Graph.avsc  ../java/
