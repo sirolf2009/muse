@@ -35,7 +35,7 @@
       "name": "children",
       "type": {
         "type": "array",
-        "items": ["OperationNode", "TopicNode"]
+        "items": ["OperationNode", "TopicNode", "TopicsNode", "ObservableNode"]
       }
     }
   ]

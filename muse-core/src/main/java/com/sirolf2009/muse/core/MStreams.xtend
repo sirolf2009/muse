@@ -1,6 +1,6 @@
 package com.sirolf2009.muse.core
 
-import com.sirolf2009.muse.core.model.Graph
+import com.fxgraph.graph.Model
 import java.util.Properties
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.Topology
@@ -9,7 +9,7 @@ import org.eclipse.xtend.lib.annotations.Data
 @Data class MStreams {
 	
 	val Properties properties
-	val Graph graph
+	val Model model
 	val Topology topology
 	val KafkaStreams kafkaStreams
 	

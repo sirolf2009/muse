@@ -1,7 +1,6 @@
 package com.sirolf2009.muse.ui.model
 
 import com.fxgraph.graph.Model
-import com.sirolf2009.muse.core.MStream
 import com.sirolf2009.muse.core.MStreamBuilder
 import com.sirolf2009.muse.ui.GraphToModel
 import java.util.Properties
@@ -9,16 +8,17 @@ import org.eclipse.xtend.lib.annotations.Accessors
 
 import static com.sirolf2009.muse.core.AvroExtensions.*
 import static com.sirolf2009.muse.core.Constants.GRAPH_QUEUE
+import com.sirolf2009.muse.core.MKafkaStream
 
 class Connection {
 	
 	val MStreamBuilder builder
-	@Accessors val MStream<String, Model> graphModels
+	@Accessors val MKafkaStream<String, Model> graphModels
 	
 	new(Properties properties) {
 		builder = new MStreamBuilder(properties)
 
-		val MStream<String, byte[]> stream = builder.stream(GRAPH_QUEUE)
+		val MKafkaStream<String, byte[]> stream = builder.stream(GRAPH_QUEUE)
 		val graphs = stream.mapValues("Parse to graph") [toGraph(it)]
 		graphModels = graphs.mapValues("Parse to model", new GraphToModel(properties))
 		graphModels.print()

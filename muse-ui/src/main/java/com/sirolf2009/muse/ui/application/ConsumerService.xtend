@@ -1,6 +1,5 @@
 package com.sirolf2009.muse.ui.application
 
-import com.sirolf2009.muse.core.MStream
 import com.sirolf2009.muse.core.MStreamBuilder
 import com.sirolf2009.muse.ui.model.StartConsumerEvent
 import com.sirolf2009.muse.ui.properties.KafkaStreamsProperties
@@ -16,6 +15,7 @@ import org.apache.kafka.common.serialization.Serdes
 
 import static com.sirolf2009.muse.core.AvroExtensions.*
 import javafx.application.Platform
+import com.sirolf2009.muse.core.MKafkaStream
 
 class ConsumerService {
 
@@ -28,7 +28,7 @@ class ConsumerService {
 			setDefaultValueSerde(Serdes.ByteArray())
 		]
 		val builder = new MStreamBuilder(props)
-		val MStream<String, byte[]> stream = builder.stream("MUSE-START-CONSUMERS")
+		val MKafkaStream<String, byte[]> stream = builder.stream("MUSE-START-CONSUMERS")
 		stream.mapValues[parse(it, StartConsumerEvent.SCHEMA$) as StartConsumerEvent].mapValues [ event |
 			val consumerProps = new Properties() => [
 				put(ConsumerConfig.CLIENT_ID_CONFIG, InetAddress.getLocalHost().getHostName())

@@ -31,7 +31,7 @@ class StreamTest {
 			put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.Double().getClass().getName());
 		]
 		val builder = new MStreamBuilder(props)
-		val MStream<Long, Double> stream = builder.stream("prices")
+		val MKafkaStream<Long, Double> stream = builder.stream("prices")
 //		stream.selectKey[key, value|value].groupByKey(Serialized.with(Serdes.Double(), Serdes.Double())).count().toStream().to("counts", Produced.with(Serdes.Double(), Serdes.Long()))
 		val doubleStream = stream.mapValues[it * 2]
 		val quadStream = doubleStream.mapValues[it * 4]

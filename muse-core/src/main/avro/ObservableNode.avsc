@@ -1,0 +1,15 @@
+{
+  "namespace": "com.sirolf2009.muse.core.model",
+  "type": "record",
+  "name": "ObservableNode",
+  "fields": [
+    {
+      "name": "ID",
+      "type": "string"
+    },
+    {
+      "name": "Name",
+      "type": "string"
+    }
+  ]
+}

@@ -1,7 +1,6 @@
 package com.sirolf2009.muse.ui.controller
 
 import com.fxgraph.graph.Graph
-import com.sirolf2009.muse.core.MStream
 import com.sirolf2009.muse.core.MStreamBuilder
 import com.sirolf2009.muse.ui.properties.LocalProperties
 import java.util.ArrayList
@@ -16,6 +15,7 @@ import org.apache.kafka.common.serialization.Serdes
 import com.fxgraph.layout.AbegoTreeLayout
 import org.abego.treelayout.Configuration.Location
 import javafx.beans.property.SimpleObjectProperty
+import com.sirolf2009.muse.core.MKafkaStream
 
 class ConnectionController extends AnchorPane {
 	
@@ -36,11 +36,11 @@ class ConnectionController extends AnchorPane {
 		val props = LocalProperties.withSerdes("example-application", Serdes.Long(), Serdes.Double())
 		val builder = new MStreamBuilder(props)
 
-		val MStream<Long, Double> stream = builder.stream("prices")
+		val MKafkaStream<Long, Double> stream = builder.stream("prices")
 		stream.mapValues[it * 2].mapValues[it / 2].foreach[key, value| println('''«key», «value»''')]
 		stream.mapValues[it * 2].mapValues[it / 2].foreach[key, value|]
 		
-		val MStream<String, Integer> stream2 = builder.stream("random")
+		val MKafkaStream<String, Integer> stream2 = builder.stream("random")
 		stream2.mapValues[it * 2].mapValues[it / 2].foreach[key, value|]
 		
 		val streams = builder.build()
