@@ -6,7 +6,6 @@ import com.sirolf2009.muse.core.IGraphic
 import com.sirolf2009.muse.core.MKafkaStream
 import com.sirolf2009.muse.core.MStreamBuilder
 import com.sirolf2009.muse.ui.properties.LocalProperties
-import java.util.List
 import javafx.application.Application
 import javafx.collections.FXCollections
 import javafx.scene.Scene

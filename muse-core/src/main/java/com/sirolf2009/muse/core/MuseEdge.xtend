@@ -32,6 +32,7 @@ class MuseEdge<S, T> extends AbstractEdge {
 		line.endXProperty().bind(targetNode.layoutXProperty().add(targetNode.widthProperty().divide(2)))
 		line.endYProperty().bind(targetNode.layoutYProperty().add(targetNode.heightProperty().divide(2)))
 		group.getChildren().add(line)
+		pane.getChildren().add(group)
 
 		val centerX = line.startXProperty().add(line.endXProperty()).divide(2)
 		val centerY = line.startYProperty().add(line.endYProperty()).divide(2)
