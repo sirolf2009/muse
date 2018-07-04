@@ -46,7 +46,7 @@ class MuseExample extends Application {
 		
 		val streams = builder.build()
 		streams.cleanUpAndStart()
-    	val graph = new Graph(new GraphToModel().apply(streams.getGraph()))
+    	val graph = new Graph(streams.getModel())
     	graph.endUpdate()
 
         val scene = new Scene(graph.getScrollPane(), 1200, 600)
