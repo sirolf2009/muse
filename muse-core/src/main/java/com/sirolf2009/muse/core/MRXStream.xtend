@@ -1,8 +1,7 @@
 package com.sirolf2009.muse.core
 
-import com.fxgraph.edges.Edge
-import com.fxgraph.graph.ICell
 import com.fxgraph.graph.Model
+import com.sirolf2009.muse.core.cells.MuseCell
 import com.sirolf2009.muse.core.cells.OperationCell
 import io.reactivex.Observable
 import io.reactivex.functions.Function
@@ -11,9 +10,9 @@ class MRXStream<T> {
 
 	val Observable<T> observable
 	val Model model
-	val ICell predecessor
+	val MuseCell<?> predecessor
 
-	new(Observable<T> observable, Model model, ICell predecessor) {
+	new(Observable<T> observable, Model model, MuseCell<?> predecessor) {
 		this.observable = observable
 		this.model = model
 		this.predecessor = predecessor
@@ -24,13 +23,15 @@ class MRXStream<T> {
 	}
 	
 	def MRXStream<T> concatWith(String name, MRXStream<T> other) {
-		new MRXStream(observable.concatWith(other.observable), model, addHook(name))
+		val cell = addHook(name)
+		model.addEdge(new MuseEdge(other.predecessor, cell))
+		new MRXStream(observable.concatWith(other.observable), model, cell)
 	}
 	
 	def addHook(String name) {
-		val node = new OperationCell(name)
+		val node = new OperationCell(name, observable)
 		model.addCell(node)
-		model.addEdge(new Edge(predecessor, node))
+		model.addEdge(new MuseEdge(predecessor, node))
 		return node
 	}
 	

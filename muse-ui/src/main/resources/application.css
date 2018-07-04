@@ -90,7 +90,7 @@ green     #859900  2/2 green     64 #5f8700 60 -20  65 133 153   0  68 100  60
 /*    -fx-padding: 0.666667em 0.083333em 0.666667em 0.083333em;  8 1 8 1 */
     -fx-padding: 0.333333em 0.083333em 0.666667em 0.083333em; /* 4 1 8 1 */
 }
- 
+
 .main-tab *.tab-label {
     -fx-text-fill: #93a1a1;
 }

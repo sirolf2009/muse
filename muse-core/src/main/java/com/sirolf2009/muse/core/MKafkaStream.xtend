@@ -1,8 +1,7 @@
 package com.sirolf2009.muse.core
 
-import com.fxgraph.edges.Edge
-import com.fxgraph.graph.ICell
 import com.fxgraph.graph.Model
+import com.sirolf2009.muse.core.cells.MuseCell
 import com.sirolf2009.muse.core.cells.OperationCell
 import com.sirolf2009.muse.core.processor.MuseHookProcessor
 import java.util.Set
@@ -20,15 +19,15 @@ import org.apache.kafka.streams.processor.internals.InternalTopologyBuilder
 class MKafkaStream<K, V> extends KStreamImpl<K, V> {
 
 	val Model model
-	val ICell predecessor
+	val MuseCell<?> predecessor
 
-	new(KStream<K, V> stream, Model model, ICell predecessor) {
+	new(KStream<K, V> stream, Model model, MuseCell<?> predecessor) {
 		super(stream.getBuilder(), stream.getName(), stream.getSourceNodes(), true)
 		this.model = model
 		this.predecessor = predecessor
 	}
 
-	new(InternalStreamsBuilder builder, String name, Set<String> sourceNodes, boolean repartitionRequired, Model model, ICell predecessor) {
+	new(InternalStreamsBuilder builder, String name, Set<String> sourceNodes, boolean repartitionRequired, Model model, MuseCell<?> predecessor) {
 		super(builder, name, sourceNodes, repartitionRequired)
 		this.model = model
 		this.predecessor = predecessor
@@ -83,12 +82,12 @@ class MKafkaStream<K, V> extends KStreamImpl<K, V> {
 		return new MKafkaStream(builder, superStream.getName(), superStream.getSourceNodes(), superStream.isRepartitionRequired, model, node)
 	}
 	
-	def OperationCell addHook(String name) {
+	def OperationCell<KafkaPair<K, V>> addHook(String name) {
 		val hook = new MuseHookProcessor<K, V>()
 		builder.internalTopologyBuilder.addProcessor(builder.newProcessorName("MUSE"), [hook], this.getName())
-		val node = new OperationCell(name)
+		val node = new OperationCell(name, hook.getLastOutput())
 		model.addCell(node)
-		model.addEdge(new Edge(predecessor, node))
+		model.addEdge(new MuseEdge(predecessor, node))
 		return node
 	}
 

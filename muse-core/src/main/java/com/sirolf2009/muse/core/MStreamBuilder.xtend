@@ -12,6 +12,8 @@ import org.apache.kafka.streams.Consumed
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
 import org.eclipse.xtend.lib.annotations.Accessors
+import com.sirolf2009.muse.core.processor.MuseHookProcessor
+import org.apache.kafka.streams.kstream.KStream
 
 class MStreamBuilder {
 
@@ -29,7 +31,8 @@ class MStreamBuilder {
 		if(registeredTopics.containsKey(topic)) {
 			return registeredTopics.get(topic) as MKafkaStream<K, V>
 		}
-		val node = new TopicCell(topic)
+		val hook = new MuseHookProcessor<K, V>()
+		val node = new TopicCell(topic, hook.getLastOutput())
 		model.addCell(node)
 		val stream = new MKafkaStream<K, V>(streamsBuilder.stream(topic), model, node)
 		registeredTopics.put(topic, stream)
@@ -37,18 +40,24 @@ class MStreamBuilder {
 	}
 
 	def synchronized <K, V> MKafkaStream<K, V> stream(String topic, String keySerde, String valueSerde) {
-		stream(topic, Class.forName(keySerde).newInstance() as Serde<?>, Class.forName(valueSerde).newInstance() as Serde<?>)
+		stream(topic, Class.forName(keySerde).newInstance() as Serde<K>, Class.forName(valueSerde).newInstance() as Serde<V>)
 	}
 
-	def synchronized <K, V> MKafkaStream<K, V> stream(String topic, Serde<?> keySerde, Serde<?> valueSerde) {
+	def synchronized <K, V> MKafkaStream<K, V> stream(String topic, Serde<K> keySerde, Serde<V> valueSerde) {
 		if(registeredTopics.containsKey(topic)) {
 			return registeredTopics.get(topic) as MKafkaStream<K, V>
 		}
-		val node = new TopicCell(topic)
+		return addKafkaHook(topic, streamsBuilder.stream(topic, Consumed.with(keySerde, valueSerde)))
+	}
+	
+	def private <K, V> MKafkaStream<K, V> addKafkaHook(String topic, KStream<K, V> stream) {
+		val hook = new MuseHookProcessor<K, V>()
+		val node = new TopicCell(topic, hook.getLastOutput())
 		model.addCell(node)
-		val MKafkaStream<K, V> stream = new MKafkaStream(streamsBuilder.stream(topic, Consumed.with(keySerde, valueSerde)), model, node)
-		registeredTopics.put(topic, stream)
-		return stream
+		//TODO register hook
+		val MKafkaStream<K, V> mStream = new MKafkaStream(stream, model, node)
+		registeredTopics.put(topic, mStream)
+		return mStream
 	}
 
 //	def synchronized <K, V> MStream<K, V> stream(Collection<String> topics, Consumed<K, V> consumed) {
