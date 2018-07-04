@@ -12,6 +12,8 @@ import org.apache.kafka.streams.Consumed
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
 import org.eclipse.xtend.lib.annotations.Accessors
+import org.apache.kafka.streams.StreamsConfig
+import java.io.File
 
 class MStreamBuilder {
 
@@ -29,7 +31,7 @@ class MStreamBuilder {
 		if(registeredTopics.containsKey(topic)) {
 			return registeredTopics.get(topic) as MKafkaStream<K, V>
 		}
-		val node = new TopicCell(topic)
+		val node = new TopicCell(topic, properties.get(StreamsConfig.APPLICATION_ID_CONFIG) as String, properties.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG) as String, new File("/opt/kafka_2.12-1.1.0"))
 		model.addCell(node)
 		val stream = new MKafkaStream<K, V>(streamsBuilder.stream(topic), model, node)
 		registeredTopics.put(topic, stream)
@@ -44,7 +46,7 @@ class MStreamBuilder {
 		if(registeredTopics.containsKey(topic)) {
 			return registeredTopics.get(topic) as MKafkaStream<K, V>
 		}
-		val node = new TopicCell(topic)
+		val node = new TopicCell(topic, properties.get(StreamsConfig.APPLICATION_ID_CONFIG) as String, properties.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG) as String, new File("/opt/kafka_2.12-1.1.0"))
 		model.addCell(node)
 		val MKafkaStream<K, V> stream = new MKafkaStream(streamsBuilder.stream(topic, Consumed.with(keySerde, valueSerde)), model, node)
 		registeredTopics.put(topic, stream)

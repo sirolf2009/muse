@@ -55,6 +55,9 @@ class MuseExample extends Application {
         stage.setTitle("Hello JavaFX and Maven")
         stage.setScene(scene)
         stage.show()
+        stage.setOnCloseRequest [
+        	System.exit(0)
+        ]
         
     	graph.layout(new AbegoTreeLayout())
     }
