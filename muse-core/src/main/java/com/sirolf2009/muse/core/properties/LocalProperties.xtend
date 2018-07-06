@@ -1,4 +1,4 @@
-package com.sirolf2009.muse.ui.properties
+package com.sirolf2009.muse.core.properties
 
 import org.apache.kafka.common.serialization.Serde
 

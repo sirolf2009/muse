@@ -3,9 +3,11 @@ package com.sirolf2009.muse.ui
 import com.fxgraph.graph.Graph
 import com.fxgraph.layout.AbegoTreeLayout
 import com.sirolf2009.muse.core.IGraphic
-import com.sirolf2009.muse.core.MKafkaStream
+import com.sirolf2009.muse.core.KafkaPair
+import com.sirolf2009.muse.core.MRXStream
 import com.sirolf2009.muse.core.MStreamBuilder
-import com.sirolf2009.muse.ui.properties.LocalProperties
+import com.sirolf2009.muse.core.properties.KafkaConsumerProperties
+import com.sirolf2009.muse.core.properties.LocalProperties
 import javafx.application.Application
 import javafx.collections.FXCollections
 import javafx.scene.Scene
@@ -27,14 +29,23 @@ class MuseExample extends Application {
 		val props = LocalProperties.withSerdes("example-application", Serdes.Long(), Serdes.Double())
 		val builder = new MStreamBuilder(props)
 
-		val MKafkaStream<Long, Double> stream = builder.stream("prices")
-		stream.mapValues[it * 2].mapValues[it / 2].foreach[key, value|]
-		stream.mapValues[it * 2].mapValues[it / 2].foreach[key, value|]
-		stream.mapValues[new Number(it * 2)].mapValues[new Number(value / 2)].mapValues[new Number(value / 2)].mapValues[new Number(value * 2)].foreach("forEach")[]
+		val MRXStream<KafkaPair<Long, Double>> consumerStream = builder.consume("prices", KafkaConsumerProperties.apply("consumer-group", "localhost:9092", Serdes.Long(), Serdes.Double()))
+		consumerStream.map("*2") [
+			getValue() * 2
+		].map("/2") [
+			it / 2
+		].subscribe("print to screen") [
+			println('''value: «it»''')
+		]
 
-		val MKafkaStream<String, Integer> stream2 = builder.stream("random")
-		stream2.mapValues[it * 2].mapValues[it / 2].foreach[key, value|]
-
+//		val MKafkaStream<Long, Double> stream = builder.stream("prices")
+//		stream.mapValues[it * 2].mapValues[it / 2].foreach[key, value|]
+//		stream.mapValues[it * 2].mapValues[it / 2].foreach[key, value|]
+//		stream.mapValues[new Number(it * 2)].mapValues[new Number(value / 2)].mapValues[new Number(value / 2)].mapValues[new Number(value * 2)].foreach("forEach")[]
+//
+//		val MKafkaStream<String, Integer> stream2 = builder.stream("random")
+//		stream2.mapValues[it * 2].mapValues[it / 2].foreach[key, value|]
+//
 //		val MRXStream<Integer> numbers = builder.stream("numbers", #[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 //		val numbers1Transformed = numbers.map("*2 ") [
 //			it * 2

@@ -4,6 +4,7 @@ import com.fxgraph.graph.Model
 import com.sirolf2009.muse.core.cells.MuseCell
 import com.sirolf2009.muse.core.cells.OperationCell
 import io.reactivex.Observable
+import io.reactivex.functions.Consumer
 import io.reactivex.functions.Function
 
 class MRXStream<T> {
@@ -26,6 +27,11 @@ class MRXStream<T> {
 		val cell = addHook(name)
 		model.addEdge(new MuseEdge(other.predecessor, cell))
 		new MRXStream(observable.concatWith(other.observable), model, cell)
+	}
+	
+	def void subscribe(String name, Consumer<? super T> consumer) {
+		addHook(name)
+		observable.subscribe(consumer)
 	}
 	
 	def addHook(String name) {

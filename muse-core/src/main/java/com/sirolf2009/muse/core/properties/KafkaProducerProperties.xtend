@@ -1,4 +1,4 @@
-package com.sirolf2009.muse.ui.properties
+package com.sirolf2009.muse.core.properties
 
 import java.net.InetAddress
 import org.apache.kafka.clients.producer.ProducerConfig
