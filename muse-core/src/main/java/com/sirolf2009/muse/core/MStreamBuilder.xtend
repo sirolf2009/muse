@@ -1,8 +1,8 @@
 package com.sirolf2009.muse.core
 
 import com.fxgraph.graph.Model
+import com.sirolf2009.muse.core.cells.ConsumerCell
 import com.sirolf2009.muse.core.cells.ObservableCell
-import com.sirolf2009.muse.core.cells.TopicCell
 import com.sirolf2009.muse.core.consumer.ObservableConsumer
 import com.sirolf2009.muse.core.processor.MuseHookProcessor
 import com.sirolf2009.muse.core.properties.KafkaConsumerProperties
@@ -14,6 +14,8 @@ import java.util.List
 import java.util.Map
 import java.util.Properties
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serde
 import org.apache.kafka.streams.Consumed
 import org.apache.kafka.streams.KafkaStreams
@@ -22,9 +24,7 @@ import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.processor.ProcessorSupplier
 import org.eclipse.xtend.lib.annotations.Accessors
-import java.util.concurrent.Executors
-import com.sirolf2009.muse.core.cells.ConsumerCell
-import org.apache.kafka.clients.consumer.ConsumerConfig
+import com.sirolf2009.muse.core.cells.TopicCell
 
 class MStreamBuilder {
 
