@@ -12,7 +12,10 @@ interface IComponent<T> {
 	def String getName()
 	
 	def MuseCell<T> getCell() {
-		return new OperationCell(getName(), getLastOutput())
+		return new OperationCell(getName(), getLastOutput(), getInternalBlueprint())
 	}
 	
+	def Observable<Blueprint> getInternalBlueprint() {
+		return Observable.empty()
+	}
 }

@@ -8,6 +8,8 @@ import com.sirolf2009.muse.core.model.IConnection
 import com.sirolf2009.muse.core.model.ISource
 import io.reactivex.Observable
 import org.eclipse.xtend.lib.annotations.Accessors
+import com.sirolf2009.muse.core.model.Blueprint
+import io.reactivex.subjects.PublishSubject
 
 @Accessors class ObservableSource<T> implements ISource<T>, RXProcessable<T> {
 	
@@ -15,6 +17,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 	val String name
 	val MutableValueGraph<IComponent<?>, IConnection<?, ?>> mutableGraph
 	val ImmutableValueGraph<IComponent<?>, IConnection<?, ?>> immutableGraph
+	val PublishSubject<Blueprint> internalBlueprint = PublishSubject.create()
 	
 	new(Observable<T> lastOutput, String name) {
 		this.lastOutput = lastOutput
@@ -28,8 +31,8 @@ import org.eclipse.xtend.lib.annotations.Accessors
 		return immutableGraph
 	}
 	
-	override getInternalAlgorithm() {
-		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	override setInternalBlueprint(Blueprint blueprint) {
+		internalBlueprint.onNext(blueprint)
 	}
 	
 }

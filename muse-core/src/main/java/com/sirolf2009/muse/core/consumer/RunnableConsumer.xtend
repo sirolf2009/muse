@@ -26,15 +26,20 @@ import org.eclipse.xtend.lib.annotations.Accessors
 				commands.forEach[accept(this)]
 			} catch(Exception e) {
 			}
-			poll(100).forEach [
-				try {
-					onValues.accept(new KafkaPair(key(), value()))
-				} catch(Exception e) {
-				}
-			]
+			try {
+				poll(100).forEach [
+					try {
+						onValues.accept(new KafkaPair(key(), value()))
+					} catch(Exception e) {
+						e.printStackTrace()
+					}
+				]
+			} catch(Exception e) {
+				e.printStackTrace()
+			}
 		}
 	}
-	
+
 	def addCommand(Consumer<? super RunnableConsumer<K, V>> command) {
 		commands.add(command)
 	}
