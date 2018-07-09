@@ -1,8 +1,7 @@
 package com.sirolf2009.muse.core.properties
 
-import org.apache.kafka.streams.StreamsConfig
-import java.net.InetAddress
 import org.apache.kafka.common.serialization.Serde
+import org.apache.kafka.streams.StreamsConfig
 
 class KafkaStreamsProperties extends KafkaProperties {
 	
@@ -10,15 +9,11 @@ class KafkaStreamsProperties extends KafkaProperties {
 		put(StreamsConfig.APPLICATION_ID_CONFIG, applicationID)
 	}
 	
-	def void setClientIDLocalHost() {
-		setClientID(InetAddress.getLocalHost().getHostName())
-	}
-
-	def void setClientID(String clientID) {
+	override void setClientID(String clientID) {
 		put(StreamsConfig.CLIENT_ID_CONFIG, clientID)
 	}
 	
-	def void setBootstrapServers(String bootstrapServers) {
+	override void setBootstrapServers(String bootstrapServers) {
 		put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
 	}
 	

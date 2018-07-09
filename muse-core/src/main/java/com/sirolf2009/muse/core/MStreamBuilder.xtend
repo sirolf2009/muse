@@ -100,7 +100,10 @@ class MStreamBuilder {
 //	}
 
 	def synchronized <V> MRXStream<V> stream(String name, Iterable<V> data) {
-		val observable = Observable.fromIterable(data)
+		return stream(name, Observable.fromIterable(data))
+	}
+
+	def synchronized <V> MRXStream<V> stream(String name, Observable<V> observable) {
 		val node = new ObservableCell<V>(observable)
 		model.addCell(node)
 		return new MRXStream(observable, model, node)

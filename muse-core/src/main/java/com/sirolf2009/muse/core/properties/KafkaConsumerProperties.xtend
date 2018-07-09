@@ -1,16 +1,11 @@
 package com.sirolf2009.muse.core.properties
 
-import java.net.InetAddress
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serde
 
 class KafkaConsumerProperties extends KafkaProperties {
 	
-	def void setClientIDLocalHost() {
-		setClientID(InetAddress.getLocalHost().getHostName())
-	}
-
-	def void setClientID(String clientID) {
+	override void setClientID(String clientID) {
 		put(ConsumerConfig.CLIENT_ID_CONFIG, clientID)
 	}
 
@@ -18,7 +13,7 @@ class KafkaConsumerProperties extends KafkaProperties {
 		put(ConsumerConfig.GROUP_ID_CONFIG, group)
 	}
 	
-	def void setBootstrapServers(String bootstrapServers) {
+	override void setBootstrapServers(String bootstrapServers) {
 		put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
 	}
 	

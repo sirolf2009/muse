@@ -1,19 +1,14 @@
 package com.sirolf2009.muse.core.properties
 
-import java.net.InetAddress
 import org.apache.kafka.clients.producer.ProducerConfig
 
 class KafkaProducerProperties extends KafkaProperties {
-	
-	def void setClientIDLocalHost() {
-		setClientID(InetAddress.getLocalHost().getHostName())
-	}
 
-	def void setClientID(String clientID) {
+	override void setClientID(String clientID) {
 		put(ProducerConfig.CLIENT_ID_CONFIG, clientID)
 	}
 	
-	def void setBootstrapServers(String bootstrapServers) {
+	override void setBootstrapServers(String bootstrapServers) {
 		put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
 	}
 	

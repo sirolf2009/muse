@@ -18,6 +18,7 @@ import javafx.scene.chart.XYChart.Series
 import javafx.stage.Stage
 import org.apache.kafka.common.serialization.Serdes
 import org.eclipse.xtend.lib.annotations.Data
+import org.abego.treelayout.Configuration.Location
 
 class MuseExample extends Application {
 
@@ -30,13 +31,28 @@ class MuseExample extends Application {
 		val builder = new MStreamBuilder(props)
 
 		val MRXStream<KafkaPair<Long, Double>> consumerStream = builder.consume("prices", KafkaConsumerProperties.apply("consumer-group", "localhost:9092", Serdes.Long(), Serdes.Double()))
+		
 		consumerStream.map("*2") [
 			getValue() * 2
-		].map("/2") [
-			it / 2
 		].subscribe("print to screen") [
-			println('''value: «it»''')
+//			println('''value: «it»''')
 		]
+		
+//		consumerStream.map("*2") [
+//			getValue() * 2
+//		].map("/2") [
+//			it / 2
+//		].subscribe("print to screen") [
+////			println('''value: «it»''')
+//		]
+//		
+//		consumerStream.map("*2") [
+//			getValue() * 2
+//		].map("/2") [
+//			it / 2
+//		].subscribe("print to screen") [
+////			println('''value: «it»''')
+//		]
 
 //		val MKafkaStream<Long, Double> stream = builder.stream("prices")
 //		stream.mapValues[it * 2].mapValues[it / 2].foreach[key, value|]
@@ -74,7 +90,7 @@ class MuseExample extends Application {
 		stage.setScene(scene)
 		stage.show()
 
-		graph.layout(new AbegoTreeLayout())
+		graph.layout(new AbegoTreeLayout(200, 100, Location.Left))
 	}
 
 	@Data static class Number implements IGraphic {
@@ -82,6 +98,7 @@ class MuseExample extends Application {
 
 		override getGraphic() {
 			val chart = new LineChart(new NumberAxis(), new NumberAxis())
+			chart.setAnimated(false)
 			chart.getData().add(new Series("Value", FXCollections.observableArrayList(new XYChart.Data(0, 0), new XYChart.Data(1, value))))
 			chart.prefWidth = 32
 			chart.prefHeight = 32
