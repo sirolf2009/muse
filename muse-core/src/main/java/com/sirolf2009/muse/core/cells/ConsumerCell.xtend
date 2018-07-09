@@ -5,9 +5,11 @@ import com.fxgraph.graph.Graph
 import com.sirolf2009.muse.core.KafkaPair
 import com.sirolf2009.muse.core.consumer.ObservableConsumer
 import io.reactivex.Observable
+import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
+import javafx.scene.chart.XYChart.Data
 import javafx.scene.chart.XYChart.Series
 import javafx.scene.control.Button
 import javafx.scene.control.Label
@@ -15,8 +17,6 @@ import javafx.scene.control.TitledPane
 import javafx.scene.layout.VBox
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
-import javafx.application.Platform
-import javafx.scene.chart.XYChart.Data
 
 @FinalFieldsConstructor @Accessors class ConsumerCell<K, V> extends AbstractCell implements MuseCell<KafkaPair<K, V>> {
 
