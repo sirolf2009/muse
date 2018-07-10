@@ -9,23 +9,13 @@
 
 	<groupId>com.sirolf2009.muse</groupId>
 	<artifactId>core</artifactId>
-	<name>core</name>
+	<name>Muse | Core</name>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.apache.kafka</groupId>
-			<artifactId>kafka-streams</artifactId>
-			<version>1.1.0</version>
-		</dependency>
 		<dependency>
 			<groupId>com.sirolf2009</groupId>
 			<artifactId>fxgraph</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.avro</groupId>
-			<artifactId>avro</artifactId>
-			<version>1.8.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

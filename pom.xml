@@ -3,9 +3,10 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.sirolf2009</groupId>
-	<artifactId>muse</artifactId>
-	<name>muse</name>
+	<groupId>com.sirolf2009.muse</groupId>
+	<artifactId>parent</artifactId>
+	<name>Muse</name>
+	<description>Order from Chaos</description>
 
 	<packaging>pom</packaging>
 	<version>0.0.1-SNAPSHOT</version>
@@ -23,7 +24,8 @@
 
 	<modules>
 		<module>muse-core</module>
-		<module>muse-ui</module>
+		<module>muse-rxjava2</module>
+		<module>kafka</module>
 	</modules>
 
 	<build>
