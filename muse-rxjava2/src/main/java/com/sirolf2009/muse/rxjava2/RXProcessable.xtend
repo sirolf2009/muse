@@ -6,10 +6,11 @@ import com.sirolf2009.muse.core.model.IComponent
 import com.sirolf2009.muse.core.model.IConnection
 import com.sirolf2009.muse.core.model.IProcessable
 import com.sirolf2009.muse.core.model.Terminal
-import java.util.function.Consumer
-import java.util.function.Function
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import java.util.function.Consumer
+import java.util.function.Function
+import java.util.function.Predicate
 
 interface RXProcessable<T> extends IProcessable<T> {
 	
@@ -33,6 +34,21 @@ interface RXProcessable<T> extends IProcessable<T> {
 				stream.setInternalBlueprint(it)
 			]
 		]
+	}
+	
+	override filter(String name, Predicate<? super T> predicate) {
+		val newObservable = lastOutput.filter[predicate.test(it)]
+		new RXStream<T>(newObservable, name, this, mutableGraph, "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.png") as IProcessable<T>
+	}
+	
+	override distinct(String name) {
+		val newObservable = lastOutput.distinct()
+		new RXStream(newObservable, name, this, mutableGraph, "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.png") as IProcessable<T>
+	}
+	
+	override skip(String name, int count) {
+		val newObservable = lastOutput.skip(count)
+		new RXStream(newObservable, name, this, mutableGraph, "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.png") as IProcessable<T>
 	}
 	
 	override <R> toList(String name) {

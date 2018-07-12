@@ -20,7 +20,7 @@ class RXJava2Driver extends Application {
 	}
 
 	override start(Stage primaryStage) throws Exception {
-		Observable.fromArray("simpleCalculation" -> simpleCalculation(), "visualCalculation" -> visualCalculation()).map [
+		Observable.fromArray("simpleCalculation" -> simpleCalculation(), "visualCalculation" -> visualCalculation(), "complicatedCalculation" -> complicatedCalculation()).map [
 			val graph = new Graph(value.getModel())
 			graph.endUpdate()
 			graph.layout(new AbegoTreeLayout(400, 400, Location.Left))
@@ -45,7 +45,7 @@ class RXJava2Driver extends Application {
 	}
 
 	def visualCalculation() {
-		new ObservableSource(Observable.range(0, 100), "0 to 100").map("as NumberObject") [new NumberObject(it)].map("0 to 200") [
+		new ObservableSource(Observable.range(0, 100), "0 to 100").map("as NumberObject")[new NumberObject(it)].map("0 to 200") [
 			new NumberObject(getNumber() * 2)
 		].map("0 to 400") [
 			new NumberObject(getNumber() * 2)
@@ -53,17 +53,28 @@ class RXJava2Driver extends Application {
 			println(it)
 		]
 	}
-	
+
+	def complicatedCalculation() {
+		println("enter complicated")
+		new ObservableSource(Observable.range(0, 2), "0 to 2").map("as NumberObject")[new NumberObject(it)].flatMap("Some random complicated shit") [value|
+			new ObservableSource(Observable.fromArray(1, 2, 3), "[1,2,3]").map("it * value") [new NumberObject(it * value.getNumber())]
+		].map("0 to 400") [
+			new NumberObject(getNumber() * 2)
+		].forEach("print to screen") [
+			println(it)
+		]
+	}
+
 	@Data static class NumberObject implements IGraphic {
-		
+
 		val double number
-		
+
 		override getGraphic() {
 			return new Label(String.valueOf(number)) => [
 				setStyle('''-fx-background-color: red;''')
 			]
 		}
-		
-	}
 
+	}
+	
 }
