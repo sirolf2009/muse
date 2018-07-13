@@ -10,27 +10,30 @@ import javafx.scene.layout.HBox
 import org.abego.treelayout.Configuration.Location
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import java.util.concurrent.atomic.AtomicReference
 
 @FinalFieldsConstructor @Accessors class OperationCell<T> extends AbstractCell implements MuseCell<T> {
-	
+
 	val String name
 	val Observable<T> lastOutput
 	val Observable<Blueprint> internalBlueprint
-	
+
 	override getGraphic(Graph graph) {
 		return new TitledPane(name, new HBox() => [
-			internalBlueprint.map[new Graph(getModel())].subscribe [blueprint|
-				val node = blueprint.getScrollPane()
-				node.widthProperty.addListener[
-					blueprint.layout(new AbegoTreeLayout(0, 0, Location.Top))
-				]
-				getChildren().add(blueprint.getScrollPane())
+			val blueprint = new AtomicReference<Graph>()
+			internalBlueprint.map[new Graph(getModel())].subscribe [ newGraph |
+				if(blueprint.get() !== null) {
+					getChildren().remove(blueprint.get().getScrollPane())
+				}
+				getChildren().add(newGraph.getScrollPane())
+				newGraph.layout(new AbegoTreeLayout(100, 100, Location.Top))
+				blueprint.set(newGraph)
 			]
 		])
 	}
-	
+
 	override toString() {
 		return '''OperationCell[«name»: «lastOutput»]'''
 	}
-	
+
 }

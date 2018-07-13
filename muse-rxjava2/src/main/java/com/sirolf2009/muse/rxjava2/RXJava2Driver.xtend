@@ -40,7 +40,7 @@ class RXJava2Driver extends Application {
 		].map("0 to 400") [
 			it * 2
 		].forEach("print to screen") [
-			println(it)
+//			println(it)
 		]
 	}
 
@@ -50,18 +50,22 @@ class RXJava2Driver extends Application {
 		].map("0 to 400") [
 			new NumberObject(getNumber() * 2)
 		].forEach("print to screen") [
-			println(it)
+//			println(it)
 		]
 	}
 
 	def complicatedCalculation() {
-		println("enter complicated")
-		new ObservableSource(Observable.range(0, 2), "0 to 2").map("as NumberObject")[new NumberObject(it)].flatMap("Some random complicated shit") [value|
+		println("complicated calculation")
+		new ObservableSource(Observable.just(1), "1").map("as NumberObject")[
+			println("calling map on "+it)
+			new NumberObject(it)
+		].flatMap("Some random complicated shit") [value|
+			println("calling flatmap on "+value)
 			new ObservableSource(Observable.fromArray(1, 2, 3), "[1,2,3]").map("it * value") [new NumberObject(it * value.getNumber())]
 		].map("0 to 400") [
 			new NumberObject(getNumber() * 2)
 		].forEach("print to screen") [
-			println(it)
+//			println(it)
 		]
 	}
 

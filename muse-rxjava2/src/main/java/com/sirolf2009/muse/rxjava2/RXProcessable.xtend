@@ -13,51 +13,49 @@ import java.util.function.Function
 import java.util.function.Predicate
 
 interface RXProcessable<T> extends IProcessable<T> {
-	
+
 	override <T2> map(String name, Function<? super T, ? extends T2> mapper) {
 		val newObservable = lastOutput.map[mapper.apply(it)]
 		new RXStream(newObservable, name, this, mutableGraph, "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/map.png")
 	}
-	
+
 	override <T2> flatMap(String name, Function<? super T, ? extends IProcessable<T2>> mapper) {
 		val subject = PublishSubject.create()
-		val newObservable = lastOutput.flatMap[
+		val newObservable = lastOutput.flatMap [
 			val mapped = mapper.apply(it)
 			val connectable = mapped.getLastOutput().publish()
-			connectable.subscribe [
-				subject.onNext(mapped.forEach("display", []))
-			]
+			subject.onNext(mapped.forEach("display", []))
 			connectable.autoConnect()
 		]
-		new RXStream(newObservable, name, this, mutableGraph, "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/map.png") => [stream|
+		new RXStream(newObservable, name, this, mutableGraph, "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png") => [ stream |
 			subject.subscribe [
 				stream.setInternalBlueprint(it)
 			]
 		]
 	}
-	
+
 	override filter(String name, Predicate<? super T> predicate) {
 		val newObservable = lastOutput.filter[predicate.test(it)]
 		new RXStream<T>(newObservable, name, this, mutableGraph, "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.png") as IProcessable<T>
 	}
-	
+
 	override distinct(String name) {
 		val newObservable = lastOutput.distinct()
 		new RXStream(newObservable, name, this, mutableGraph, "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.png") as IProcessable<T>
 	}
-	
+
 	override skip(String name, int count) {
 		val newObservable = lastOutput.skip(count)
 		new RXStream(newObservable, name, this, mutableGraph, "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.png") as IProcessable<T>
 	}
-	
+
 	override <R> toList(String name) {
 		val newObservable = lastOutput.toList().flatMapObservable [
 			Observable.just(it)
 		]
 		new RXStream(newObservable, name, this, mutableGraph, "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.2.png")
 	}
-	
+
 	override forEach(String name, Consumer<T> consumer) {
 		getLastOutput().subscribe [
 			consumer.accept(it)
@@ -65,8 +63,9 @@ interface RXProcessable<T> extends IProcessable<T> {
 		val terminal = new Terminal(getLastOutput(), name, this, mutableGraph)
 		return new Blueprint(terminal)
 	}
-	
+
 	def MutableValueGraph<IComponent<?>, IConnection<?, ?>> getMutableGraph()
+
 	def void setInternalBlueprint(Blueprint blueprint)
-	
+
 }
