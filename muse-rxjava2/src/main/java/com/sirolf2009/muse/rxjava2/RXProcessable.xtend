@@ -11,6 +11,7 @@ import io.reactivex.subjects.PublishSubject
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.Predicate
+import com.sirolf2009.muse.core.model.IStorage
 
 interface RXProcessable<T> extends IProcessable<T> {
 
@@ -47,6 +48,11 @@ interface RXProcessable<T> extends IProcessable<T> {
 	override skip(String name, int count) {
 		val newObservable = lastOutput.skip(count)
 		new RXStream(newObservable, name, this, mutableGraph, "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.png") as IProcessable<T>
+	}
+	
+	override store(String name, IStorage<T> storage) {
+		val newObservable = lastOutput.doOnNext[storage.store(it)]
+		new RXStream(newObservable, name, this, mutableGraph, "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.o.png") as IProcessable<T>
 	}
 
 	override <R> toList(String name) {

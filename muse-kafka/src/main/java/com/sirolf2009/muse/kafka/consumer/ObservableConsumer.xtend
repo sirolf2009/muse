@@ -16,8 +16,12 @@ import org.eclipse.xtend.lib.annotations.Accessors
 
 	new(Properties properties, Subject<K> keyObservable, Subject<V> valueObservable) {
 		super(properties) [
-			keyObservable.onNext(getKey())
-			valueObservable.onNext(getValue())
+			if(getKey() !== null) {
+				keyObservable.onNext(getKey())
+			}
+			if(getValue() !== null) {
+				valueObservable.onNext(getValue())
+			}
 		]
 		this.keyObservable = keyObservable
 		this.valueObservable = valueObservable
