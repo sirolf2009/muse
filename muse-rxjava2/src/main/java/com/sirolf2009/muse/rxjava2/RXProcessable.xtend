@@ -52,7 +52,7 @@ interface RXProcessable<T> extends IProcessable<T> {
 	
 	override store(String name, IStorage<T> storage) {
 		val newObservable = lastOutput.doOnNext[storage.store(it)]
-		new RXStream(newObservable, name, this, mutableGraph, "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.o.png") as IProcessable<T>
+		new RXStream(newObservable, name, this, mutableGraph, "doOnNext.o") as IProcessable<T>
 	}
 
 	override <R> toList(String name) {

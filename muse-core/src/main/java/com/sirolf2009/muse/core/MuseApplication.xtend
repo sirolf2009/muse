@@ -8,7 +8,6 @@ import javafx.application.Application
 import javafx.scene.Scene
 import javafx.stage.Stage
 import org.abego.treelayout.Configuration.Location
-import javafx.geometry.Insets
 
 abstract class MuseApplication extends Application {
 	
