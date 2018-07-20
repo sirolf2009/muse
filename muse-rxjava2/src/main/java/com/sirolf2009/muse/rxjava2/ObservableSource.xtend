@@ -28,7 +28,7 @@ import io.reactivex.subjects.PublishSubject
 	}
 	
 	override getGraph() {
-		return immutableGraph
+		return immutableGraph 
 	}
 	
 	override setInternalBlueprint(Blueprint blueprint) {
