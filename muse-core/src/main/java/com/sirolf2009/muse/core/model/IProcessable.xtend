@@ -12,6 +12,7 @@ interface IProcessable<T> extends IComponent<T> {
 	def IProcessable<T> filter(String name, Predicate<? super T> mapper)
 	def IProcessable<T> distinct(String name)
 	def IProcessable<T> skip(String name, int count)
+	def IProcessable<T> store(String name, IStorage<T>torage)
 	def <R> IProcessable<List<R>> toList(String name)
 	def Blueprint forEach(String name, Consumer<T> consumer)
 	
