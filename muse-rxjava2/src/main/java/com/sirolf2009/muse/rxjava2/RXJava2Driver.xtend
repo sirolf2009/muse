@@ -24,7 +24,7 @@ class RXJava2Driver extends Application {
 			val graph = new Graph(value.getModel())
 			graph.endUpdate()
 			graph.layout(new AbegoTreeLayout(400, 400, Location.Left))
-			new TitledPane(key, graph.getScrollPane())
+			new TitledPane(key, graph.getCanvas())
 		].toList().map [
 			new Scene(new VBox(it), 1200, 600)
 		].subscribe [

@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicReference
 			val blueprint = new AtomicReference<Graph>()
 			internalBlueprint.map[new Graph(getModel())].subscribe [ newGraph |
 				if(blueprint.get() !== null) {
-					getChildren().remove(blueprint.get().getScrollPane())
+					getChildren().remove(blueprint.get().getCanvas())
 				}
-				getChildren().add(newGraph.getScrollPane())
+				getChildren().add(newGraph.getCanvas())
 				newGraph.layout(new AbegoTreeLayout(100, 100, Location.Top))
 				blueprint.set(newGraph)
 			]
