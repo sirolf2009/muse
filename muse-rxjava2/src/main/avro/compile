@@ -1,2 +1,0 @@
-#!/bin/bash
-avro compile schema StartConsumerEvent.avsc ConnectionDetails.avsc ../java/
