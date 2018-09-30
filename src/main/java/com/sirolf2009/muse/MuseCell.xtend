@@ -3,6 +3,7 @@ package com.sirolf2009.muse
 import com.fxgraph.cells.AbstractCell
 import com.fxgraph.graph.Graph
 import com.fxgraph.graph.Model
+import com.sirolf2009.treeviewhierarchy.IHierarchicalData
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -18,10 +19,14 @@ import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import javafx.scene.transform.Scale
 import org.eclipse.xtend.lib.annotations.Accessors
+import javafx.collections.FXCollections
+import javafx.collections.ListChangeListener
+import com.fxgraph.graph.ICell
+import javafx.collections.ListChangeListener.Change
 
-@Accessors class MuseCell extends AbstractCell {
+@Accessors class MuseCell extends AbstractCell implements IHierarchicalData<MuseCell> {
 
-	val Model model = new Model()
+	val Model model
 	val name = new SimpleStringProperty("new cell")
 	val showContents = new SimpleBooleanProperty()
 	val parent = new SimpleObjectProperty<MuseCell>()
@@ -30,11 +35,13 @@ import org.eclipse.xtend.lib.annotations.Accessors
 	val width = new SimpleDoubleProperty(200)
 	val height = new SimpleDoubleProperty(200)
 
-	new() {
+	new(Model model) {
+		this.model = model
 	}
 
 	new(MuseCell parent) {
 		this.parent.set(parent)
+		this.model = new Model()
 	}
 
 	override getGraphic(Graph graph) {
@@ -44,26 +51,33 @@ import org.eclipse.xtend.lib.annotations.Accessors
 		view.setFill(Color.WHITE)
 
 		val subGraph = new Graph(model)
+		subGraph.getCanvas().setStyle("-fx-background-color: rgb(12, 29.6, 32.7);")
+		subGraph.getUseNodeGestures().set(false);
+		subGraph.getUseViewportGestures().set(false);
 		val scale = new Scale(1, 1, 0, 0)
-		subGraph.getCanvas().setStyle("-fx-background-color: rgba(255, 0, 0, 0.5);")
 		subGraph.getCanvas().widthProperty().addListener [ obs, oldVal, newVal |
-			val myWidth = subGraph.getCanvas().getWidth()
-			val availableWidth = view.getWidth()
-			val scaleX = myWidth / availableWidth
+			val myWidth = if(subGraph.getModel().getAllCells().size() > 0) {
+					subGraph.getCanvas().getChildren().map[getLayoutX() + getBoundsInLocal().getWidth()].max()
+				} else {
+					subGraph.getCanvas().getWidth()
+				}
+			val availableWidth = view.getWidth() * 0.9
+			val scaleX = availableWidth / myWidth
 			scale.setX(scaleX)
-			println('''My Width: «myWidth»''')
-			println('''Available Width: «availableWidth»''')
-			println('''ScaleX: «scaleX»''')
-			println('''canvas X: «subGraph.getCanvas().getLayoutX()»''')
-			println()
+			subGraph.getCanvas().setTranslateX(view.getWidth() * 0.05)
 		]
 		subGraph.getCanvas().heightProperty().addListener [ obs, oldVal, newVal |
-			val availableHeight = view.getHeight()
-			scale.setY(availableHeight / newVal.doubleValue())
+			val myHeight = if(subGraph.getModel().getAllCells().size() > 0) {
+					subGraph.getCanvas().getChildren().map[getLayoutY() + getBoundsInLocal().getHeight()].max()
+				} else {
+					subGraph.getCanvas().getHeight()
+				}
+			val availableHeight = view.getHeight() * 0.9
+			val scaleY = availableHeight / myHeight
+			scale.setY(scaleY)
+			subGraph.getCanvas().setTranslateY(view.getHeight() * 0.05)
 		]
 		subGraph.getCanvas().getTransforms().add(scale)
-		subGraph.getCanvas().setTranslateX(50)
-		subGraph.getCanvas().setTranslateY(50)
 		subGraph.getCanvas().visibleProperty().bind(showContents)
 
 		val label = new Label()
@@ -131,6 +145,27 @@ import org.eclipse.xtend.lib.annotations.Accessors
 		} else {
 			return parent.get().getLevel() + 1
 		}
+	}
+
+	override getChildren() {
+		val childNodes = FXCollections.observableArrayList(model.getAllCells().filter[it instanceof MuseCell].map[it as MuseCell].toList())
+		model.getAllCells().addListener(new ListChangeListener<ICell>() {
+			override onChanged(Change<? extends ICell> c) {
+				while(c.next()) {
+					c.getAddedSubList().filter[it instanceof MuseCell].map[it as MuseCell].forEach [
+						childNodes.add(it)
+					]
+					c.getRemoved().filter[it instanceof MuseCell].map[it as MuseCell].forEach [
+						childNodes.add(it)
+					]
+				}
+			}
+		})
+		return childNodes
+	}
+
+	override toString() {
+		return '''«name.get()»(«getDepth()», «getLevel()»)'''
 	}
 
 }

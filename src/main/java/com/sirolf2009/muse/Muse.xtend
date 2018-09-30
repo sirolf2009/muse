@@ -4,66 +4,99 @@ import com.fxgraph.graph.Graph
 import com.fxgraph.graph.ICell
 import com.fxgraph.graph.IGraphNode
 import com.fxgraph.graph.Model
-import java.util.Random
+import com.sirolf2009.muse.focusstack.FocusStack
+import com.sirolf2009.muse.focusstack.FocusStackViewer
+import com.sirolf2009.treeviewhierarchy.TreeViewHierarchy
 import javafx.application.Application
 import javafx.beans.binding.Bindings
-import javafx.beans.property.SimpleObjectProperty
-import javafx.collections.ListChangeListener
+import javafx.collections.FXCollections
+import javafx.collections.ListChangeListener.Change
 import javafx.scene.Scene
 import javafx.scene.control.Slider
+import javafx.scene.control.TreeItem
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyEvent
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.BorderPane
+import javafx.scene.layout.Pane
+import javafx.scene.layout.StackPane
+import javafx.scene.layout.VBox
 import javafx.stage.Stage
 
 class Muse extends Application {
 
-	val viewingModel = new SimpleObjectProperty<Model>()
+	val focusStack = new FocusStack()
 
 	override start(Stage primaryStage) throws Exception {
-		val borderPane = new BorderPane()
-		val rootGraph = new Graph()
+		val overlay = new BorderPane()
+		overlay.setPickOnBounds(false)
 
-		rootGraph.beginUpdate()
-		rootGraph.getModel().addCell(new MuseCell() => [
-		])
-		rootGraph.getModel().addCell(new MuseCell() => [
-			y.set(1000)
-		])
-		rootGraph.getModel().addCell(new MuseCell() => [
-			x.set(1000)
-		])
-		rootGraph.getModel().addCell(new MuseCell() => [
-			x.set(1000)
-			y.set(1000)
-		])
-		rootGraph.endUpdate()
+		val centerSpace = new Pane()
+		centerSpace.setVisible(false)
+		centerSpace.setPickOnBounds(false)
+		overlay.setCenter(centerSpace)
 
-		val slider = new Slider(0, 1, 0)
-		slider.setBlockIncrement(1)
-		slider.setMajorTickUnit(1)
-		slider.setMinorTickCount(0)
-		slider.setShowTickLabels(true)
-		slider.setSnapToTicks(true)
-		borderPane.setBottom(slider)
-		rootGraph.getModel().getAllCells().addListener(new ListChangeListener<ICell>() {
-			override onChanged(Change<? extends ICell> c) {
-				val maxDepth = rootGraph.getModel().getAllCells().filter[it instanceof MuseCell].map[it as MuseCell].map[getDepth()].max()
-				slider.setMax(maxDepth)
-			}
-		})
-		val sliderValue = Bindings.createIntegerBinding([
-			Math.floor(slider.getValue()) as int
-		], slider.valueProperty())
+		val stackPane = new StackPane(overlay)
+		val rootModel = new Model()
+		val rootCell = new MuseCell(rootModel)
+		rootCell.getName().set("Root Node")
 
-		viewingModel.addListener [ obs, oldVal, newVal |
+		val explorer = new TreeViewHierarchy(new TreeItem(rootCell))
+		explorer.setItems(FXCollections.observableArrayList(rootCell))
+		explorer.setShowRoot(false)
+
+		val focusStackViewer = new FocusStackViewer(focusStack)
+
+		overlay.setRight(new VBox(explorer, focusStackViewer) => [
+			setStyle("-fx-background-color: white;")
+		])
+
+		val focusSlider = new Slider(0, 0, 0)
+		focusSlider.setBlockIncrement(1)
+		focusSlider.setMajorTickUnit(1)
+		focusSlider.setMinorTickCount(0)
+		focusSlider.setShowTickLabels(true)
+		focusSlider.setSnapToTicks(true)
+		val focusValue = Bindings.createIntegerBinding([
+			Math.floor(focusSlider.getValue()) as int
+		], focusSlider.valueProperty())
+		focusValue.addListener [ obs, oldVal, newVal |
+			focusStack.getFocusIndex().set(focusValue.get())
+		]
+		focusStack.getFocusList().addListener[Change<? extends MuseCell> c|
+			focusSlider.setMax(Math.max(0, focusStack.getFocusList().size()-1))
+		]
+		focusStack.getFocusIndex().addListener [ obs, oldVal, newVal |
+			focusSlider.setValue(focusStack.getFocusIndex().get())
+		]
+
+		val visibilitySlider = new Slider(0, 0, 0)
+		visibilitySlider.setBlockIncrement(1)
+		visibilitySlider.setMajorTickUnit(1)
+		visibilitySlider.setMinorTickCount(0)
+		visibilitySlider.setShowTickLabels(true)
+		visibilitySlider.setSnapToTicks(true)
+		val visibilityValue = Bindings.createIntegerBinding([
+			Math.floor(visibilitySlider.getValue()) as int
+		], visibilitySlider.valueProperty())
+
+		overlay.setBottom(new VBox(focusSlider, visibilitySlider) => [
+			setStyle("-fx-background-color: white;")
+		])
+
+		rootCell.getShowContents().bind(focusValue.greaterThanOrEqualTo(rootCell.getLevel()))
+
+		focusStack.getFocusedCell().addListener [ obs, oldVal, newVal |
 			if(newVal !== null) {
-				val graph = new Graph(newVal) {
+				focusSlider.setValue(newVal.getLevel())
+				val model = newVal.getModel()
+				val graph = new Graph(model) {
 					override createGraphic(IGraphNode node) {
 						val graphic = super.createGraphic(node)
 						if(node instanceof MuseCell) {
 							graphic.addEventFilter(MouseEvent.MOUSE_CLICKED) [
 								if(getClickCount() == 1 && isControlDown()) {
-									viewingModel.set(node.getModel())
+									focusStack.push(node)
 									consume()
 								}
 							]
@@ -71,78 +104,55 @@ class Muse extends Application {
 						return graphic
 					}
 				}
-				graph.getCanvas().addEventHandler(MouseEvent.MOUSE_CLICKED) [
-					if(getClickCount() == 2) {
-						newVal.addCell(new MuseCell() => [ cell |
-							cell.getX().set(getX() - (cell.getWidth().get()/2))
-							cell.getY().set(getY() - (cell.getHeight().get()/2))
-							cell.getShowContents().bind(sliderValue.greaterThan(cell.getLevel()))
-							cell.getModel().addCell(new MuseCell() => [ child |
-								if(new Random().nextInt(5) == 0) {
-									child.getModel().addCell(new MuseCell(cell))
-									child.getModel().endUpdate()
-								}
-							])
-							cell.getModel().endUpdate()
-							consume()
-						])
-						graph.endUpdate()
-						consume()
-					}
+				model.getAddedCells().addListener [ Change<? extends ICell> evt |
+					graph.endUpdate()
 				]
-				borderPane.setCenter(graph.getCanvas())
+				graph.getCanvas().setStyle("-fx-background-color: rgb(2, 19.6, 22.7);")
+				graph.getCanvas().setTranslateX(-100)
+				if(stackPane.getChildren().size() == 2) {
+					stackPane.getChildren().remove(0)
+				}
+				graph.getCanvas().maxHeightProperty().bind(centerSpace.heightProperty())
+				stackPane.getChildren().set(0, graph.getCanvas())
+				stackPane.getChildren().add(overlay)
+			}
+		]
+		focusStack.push(rootCell)
+
+		val scene = new Scene(stackPane, 1024, 768)
+		scene.getStylesheets().add(getClass().getResource("/application.css").toExternalForm())
+		scene.addEventHandler(KeyEvent.KEY_RELEASED) [
+			if(getCode().equals(KeyCode.LEFT) && isAltDown()) {
+				focusStack.descend()
+				consume()
+			}
+			if(getCode().equals(KeyCode.RIGHT) && isAltDown()) {
+				focusStack.ascend()
+				consume()
+			}
+		]
+		scene.addEventHandler(MouseEvent.MOUSE_CLICKED) [
+			if(getClickCount() == 2) {
+				focusStack.getFocusedCell().get().getModel().addCell(new MuseCell(focusStack.getFocusedCell().get()) => [ cell |
+					cell.getX().set(getX() - (cell.getWidth().get() / 2))
+					cell.getY().set(getY() - (cell.getHeight().get() / 2))
+					cell.getShowContents().bind(visibilityValue.greaterThanOrEqualTo(cell.getLevel()))
+					cell.getModel().endUpdate()
+					cell.getName().set('''New cell @ «cell.getLevel()»''')
+					cell.getName().addListener[evt|explorer.update()]
+					consume()
+				])
+				visibilitySlider.setMax(rootCell.getDepth())
+				consume()
 			}
 		]
 
-		viewingModel.set(rootGraph.getModel())
-		
-
-		val scene = new Scene(borderPane, 1024, 768)
-		scene.getStylesheets().add(getClass().getResource("/application.css").toExternalForm())
-		
 		primaryStage.setScene(scene)
 		primaryStage.show()
-
-//		val injector = XtendInjectorSingleton.INJECTOR
-//		XtendBatchCompiler xtendBatchCompiler = injector.getInstance(XtendBatchCompiler.class);
-//		if ((args == null) || (args.length == 0)) {
-//			printUsage();
-//			return;
-//		}
-//		Iterator<String> arguments = Arrays.asList(args).iterator();
-//		while (arguments.hasNext()) {
-//			String argument = arguments.next();
-//			if ("-d".equals(argument.trim())) {
-//				xtendBatchCompiler.setOutputPath(arguments.next().trim());
-//			} else if ("-classpath".equals(argument.trim()) || "-cp".equals(argument.trim())) {
-//				xtendBatchCompiler.setClassPath(arguments.next().trim());
-//			} else if ("-tempdir".equals(argument.trim()) || "-td".equals(argument.trim())) {
-//				xtendBatchCompiler.setTempDirectory(arguments.next().trim());
-//			} else if ("-encoding".equals(argument.trim())) {
-//				xtendBatchCompiler.setFileEncoding(arguments.next().trim());
-//			} else if ("-useCurrentClassLoader".equals(argument.trim())) {
-//				xtendBatchCompiler.setUseCurrentClassLoaderAsParent(true);
-//			} else {
-//				xtendBatchCompiler.setSourcePath(argument);
-//			}
-//		}
-//		if (!xtendBatchCompiler.compile()) {
-//			System.exit(1);
-//		}
 	}
 
 	def static void main(String[] args) {
 		launch(args)
-	}
-
-	def static layout(ICell cell, Graph graph, double x, double y) {
-		graph.getGraphic(cell) => [
-			parentProperty().addListener [ obs, oldVal, newVal |
-				setLayoutX(x)
-				setLayoutY(y)
-				println('''«getLayoutX()», «getLayoutY()»''')
-			]
-		]
 	}
 
 }
