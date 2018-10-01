@@ -4,6 +4,7 @@ import com.fxgraph.graph.Graph
 import com.fxgraph.graph.ICell
 import com.fxgraph.graph.IGraphNode
 import com.fxgraph.graph.Model
+import com.sirolf2009.muse.cell.MuseCell
 import com.sirolf2009.muse.focusstack.FocusStack
 import com.sirolf2009.muse.focusstack.FocusStackViewer
 import com.sirolf2009.treeviewhierarchy.TreeViewHierarchy
@@ -22,6 +23,9 @@ import javafx.scene.layout.Pane
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
+import org.eclipse.xtend.core.compiler.batch.Main
+import com.sirolf2009.muse.cell.MuseCodeCell
+import com.sirolf2009.muse.cell.MuseSquareCell
 
 class Muse extends Application {
 
@@ -63,8 +67,8 @@ class Muse extends Application {
 		focusValue.addListener [ obs, oldVal, newVal |
 			focusStack.getFocusIndex().set(focusValue.get())
 		]
-		focusStack.getFocusList().addListener[Change<? extends MuseCell> c|
-			focusSlider.setMax(Math.max(0, focusStack.getFocusList().size()-1))
+		focusStack.getFocusList().addListener [ Change<? extends MuseCell> c |
+			focusSlider.setMax(Math.max(0, focusStack.getFocusList().size() - 1))
 		]
 		focusStack.getFocusIndex().addListener [ obs, oldVal, newVal |
 			focusSlider.setValue(focusStack.getFocusIndex().get())
@@ -133,15 +137,22 @@ class Muse extends Application {
 		]
 		scene.addEventHandler(MouseEvent.MOUSE_CLICKED) [
 			if(getClickCount() == 2) {
-				focusStack.getFocusedCell().get().getModel().addCell(new MuseCell(focusStack.getFocusedCell().get()) => [ cell |
-					cell.getX().set(getX() - (cell.getWidth().get() / 2))
-					cell.getY().set(getY() - (cell.getHeight().get() / 2))
-					cell.getShowContents().bind(visibilityValue.greaterThanOrEqualTo(cell.getLevel()))
-					cell.getModel().endUpdate()
-					cell.getName().set('''New cell @ «cell.getLevel()»''')
-					cell.getName().addListener[evt|explorer.update()]
-					consume()
-				])
+				val cell = if(isControlDown()) {
+						new MuseCodeCell(focusStack.getFocusedCell().get()) => [
+							getName().set('''
+							Observable.create [
+							]''')
+						]
+					} else {
+						new MuseSquareCell(focusStack.getFocusedCell().get())
+					}
+				cell.getX().set(getX() - (cell.getWidth().get() / 2))
+				cell.getY().set(getY() - (cell.getHeight().get() / 2))
+				cell.getShowContents().bind(visibilityValue.greaterThanOrEqualTo(cell.getLevel()))
+				cell.getModel().endUpdate()
+				cell.getName().set('''New cell @ «cell.getLevel()»''')
+				cell.getName().addListener[evt|explorer.update()]
+				focusStack.getFocusedCell().get().getModel().addCell(cell)
 				visibilitySlider.setMax(rootCell.getDepth())
 				consume()
 			}
@@ -149,6 +160,8 @@ class Muse extends Application {
 
 		primaryStage.setScene(scene)
 		primaryStage.show()
+
+		Main.main(#[])
 	}
 
 	def static void main(String[] args) {

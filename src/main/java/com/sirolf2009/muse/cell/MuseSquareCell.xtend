@@ -1,13 +1,10 @@
-package com.sirolf2009.muse
+package com.sirolf2009.muse.cell
 
-import com.fxgraph.cells.AbstractCell
 import com.fxgraph.graph.Graph
+import com.fxgraph.graph.ICell
 import com.fxgraph.graph.Model
-import com.sirolf2009.treeviewhierarchy.IHierarchicalData
-import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleDoubleProperty
-import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
+import javafx.collections.FXCollections
+import javafx.collections.ListChangeListener
 import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
@@ -18,30 +15,15 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import javafx.scene.transform.Scale
-import org.eclipse.xtend.lib.annotations.Accessors
-import javafx.collections.FXCollections
-import javafx.collections.ListChangeListener
-import com.fxgraph.graph.ICell
-import javafx.collections.ListChangeListener.Change
 
-@Accessors class MuseCell extends AbstractCell implements IHierarchicalData<MuseCell> {
-
-	val Model model
-	val name = new SimpleStringProperty("new cell")
-	val showContents = new SimpleBooleanProperty()
-	val parent = new SimpleObjectProperty<MuseCell>()
-	val x = new SimpleDoubleProperty(0)
-	val y = new SimpleDoubleProperty(0)
-	val width = new SimpleDoubleProperty(200)
-	val height = new SimpleDoubleProperty(200)
+class MuseSquareCell extends MuseCell {
 
 	new(Model model) {
-		this.model = model
+		super(model)
 	}
 
 	new(MuseCell parent) {
-		this.parent.set(parent)
-		this.model = new Model()
+		super(parent)
 	}
 
 	override getGraphic(Graph graph) {
@@ -92,12 +74,12 @@ import javafx.collections.ListChangeListener.Change
 			y.unbind()
 			setLayoutY(y.get())
 			y.bind(layoutYProperty())
-			width.unbind()
-			setPrefWidth(width.get())
-			width.bind(prefWidthProperty())
-			height.unbind()
-			setPrefHeight(height.get())
-			height.bind(prefHeightProperty())
+			this.getWidth().unbind()
+			setPrefWidth(this.getWidth().get())
+			this.getWidth().bind(prefWidthProperty())
+			this.getHeight().unbind()
+			setPrefHeight(this.getHeight().get())
+			this.getHeight().bind(prefHeightProperty())
 
 			setAlignment(Pos.CENTER)
 			addEventFilter(MouseEvent.MOUSE_CLICKED) [
@@ -129,43 +111,6 @@ import javafx.collections.ListChangeListener.Change
 				}
 			]
 		]
-	}
-
-	def int getDepth() {
-		if(model.getAllCells().filter[it instanceof MuseCell].isEmpty()) {
-			return 0
-		} else {
-			model.getAllCells().filter[it instanceof MuseCell].map[it as MuseCell].map[getDepth()].max() + 1
-		}
-	}
-
-	def int getLevel() {
-		if(parent.get() === null) {
-			return 0
-		} else {
-			return parent.get().getLevel() + 1
-		}
-	}
-
-	override getChildren() {
-		val childNodes = FXCollections.observableArrayList(model.getAllCells().filter[it instanceof MuseCell].map[it as MuseCell].toList())
-		model.getAllCells().addListener(new ListChangeListener<ICell>() {
-			override onChanged(Change<? extends ICell> c) {
-				while(c.next()) {
-					c.getAddedSubList().filter[it instanceof MuseCell].map[it as MuseCell].forEach [
-						childNodes.add(it)
-					]
-					c.getRemoved().filter[it instanceof MuseCell].map[it as MuseCell].forEach [
-						childNodes.add(it)
-					]
-				}
-			}
-		})
-		return childNodes
-	}
-
-	override toString() {
-		return '''«name.get()»(«getDepth()», «getLevel()»)'''
 	}
 
 }

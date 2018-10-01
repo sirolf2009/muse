@@ -1,6 +1,6 @@
 package com.sirolf2009.muse.focusstack
 
-import com.sirolf2009.muse.MuseCell
+import com.sirolf2009.muse.cell.MuseCell
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.FXCollections

@@ -1,13 +1,13 @@
 package com.sirolf2009.muse.focusstack
 
-import javafx.scene.control.Label
-import javafx.scene.layout.VBox
-import org.tbee.javafx.scene.layout.MigPane
+import com.sirolf2009.muse.cell.MuseCell
 import javafx.collections.ListChangeListener.Change
-import com.sirolf2009.muse.MuseCell
-import javafx.scene.control.ListView
+import javafx.scene.control.Label
 import javafx.scene.control.ListCell
+import javafx.scene.control.ListView
+import javafx.scene.layout.VBox
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import org.tbee.javafx.scene.layout.MigPane
 
 class FocusStackViewer extends VBox {
 	
