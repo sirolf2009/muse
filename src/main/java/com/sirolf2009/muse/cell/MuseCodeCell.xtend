@@ -5,19 +5,22 @@ import com.sirolf2009.muse.Project
 import com.sirolf2009.muse.Publisher
 import com.sirolf2009.muse.XtendEditor
 import java.io.File
+import java.time.Duration
+import java.util.regex.Pattern
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.property.StringProperty
+import javafx.collections.FXCollections
 import javafx.geometry.Pos
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
-import javafx.collections.FXCollections
 import org.eclipse.xtend.lib.annotations.Accessors
+import org.fxmisc.flowless.VirtualizedScrollPane
 
 @Accessors class MuseCodeCell extends MuseCell {
-	
+
 	val StringProperty code
-	
+
 	new(Project project, MuseCell parent) {
 		super(project, parent)
 		getWidth().set(400)
@@ -36,7 +39,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 		editor.setTranslateY(10)
 		editor.prefWidthProperty().bind(view.widthProperty())
 
-		return new StackPane(view, editor) => [
+		return new StackPane(view, new VirtualizedScrollPane(editor)) => [
 			x.unbind()
 			setLayoutX(x.get())
 			x.bind(layoutXProperty())
@@ -49,17 +52,27 @@ import org.eclipse.xtend.lib.annotations.Accessors
 			this.getHeight().unbind()
 			setPrefHeight(this.getHeight().get())
 			this.getHeight().bind(prefHeightProperty().subtract(10))
-			
+
 			editor.prefWidthProperty().bind(widthProperty())
 			editor.prefHeightProperty().bind(heightProperty())
+			editor.multiPlainChanges().successionEnds(Duration.ofMillis(500)).subscribe [
+				val pattern = Pattern.compile(".*package[\\W\\w]*class ([a-zA-Z0-9]*)")
+				val matcher = pattern.matcher(getCode().get())
+				if(matcher.find()) {
+					if(!matcher.group(1).equals(getName().get())) {
+						getName().set(matcher.group(1))
+					}
+				}
+			]
 			code.bind(editor.textProperty())
+
 			setAlignment(Pos.CENTER)
 		]
 	}
-	
+
 	def String getDefaultCode() {
 		val pathElements = getPath().replaceFirst("/", "").split("/")
-		val package = (0 ..< pathElements.size() -1).map[pathElements.get(it)].join(".")
+		val package = (0 ..< pathElements.size() - 1).map[pathElements.get(it)].join(".")
 		return '''
 		package «package»
 		
@@ -74,11 +87,11 @@ import org.eclipse.xtend.lib.annotations.Accessors
 			
 		}'''
 	}
-	
+
 	override getDepth() {
 		return 0
 	}
-	
+
 	override getChildren() {
 		return FXCollections.emptyObservableList()
 	}

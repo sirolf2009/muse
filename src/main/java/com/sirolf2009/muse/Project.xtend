@@ -10,6 +10,9 @@ import com.sirolf2009.muse.cell.MuseCodeCell
 import com.sirolf2009.muse.cell.MuseSquareCell
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
+import javax.tools.ToolProvider
+import javax.tools.DiagnosticCollector
+import java.util.stream.Collectors
 
 class Project {
 
@@ -23,37 +26,36 @@ class Project {
 	def compile() {
 		save()
 
-		println("compiling")
-		FileUtils.deleteDirectory(getOutputPath())
+		FileUtils.deleteDirectory(getJavaSourcePath())
 		val injector = XtendInjectorSingleton.INJECTOR
 		val compiler = injector.getInstance(XtendBatchCompiler)
-		compiler.setOutputPath(getOutputPath().getAbsolutePath())
+		compiler.setOutputPath(getJavaSourcePath().getAbsolutePath())
 		compiler.setTempDirectory(getTempDir().getAbsolutePath())
 		compiler.setJavaSourceVersion("1.8")
 		compiler.setUseCurrentClassLoaderAsParent(true)
 		compiler.setSourcePath(getInputPath().getAbsolutePath())
 		if(!compiler.compile()) {
-			println("failed")
 			throw new IllegalArgumentException("Failed to compile")
 		}
 		injector.getInstance(CancellationObserver).stop()
-		println("done")
+		
+		val diagnostics = new DiagnosticCollector()
+		val javac = ToolProvider.getSystemJavaCompiler()
+		val files = javac.getStandardFileManager(new DiagnosticCollector(), null, null)
+		val sources = files.getJavaFileObjectsFromFiles(Files.walk(getTarget().toPath()).filter[Files.isRegularFile(it) && getFileName().endsWith(".java")].map[toFile()].collect(Collectors.toList()))
+		val task = javac.getTask(null, files, diagnostics, null, null, sources)
+		task.call()
 	}
 
 	def save() {
-		println("saving")
 		FileUtils.deleteDirectory(getInputPath())
 		save(rootCell)
 	}
 
 	def void save(MuseCell cell) {
-		println("saving " + cell)
 		if(cell instanceof MuseCodeCell) {
 			val destination = new File(getInputPath(), cell.getPath()+".xtend")
 			destination.getParentFile().mkdirs()
-			println('''Writing to «new File(getInputPath(), cell.getPath()).toPath()»
-			«cell.getCode().get()»
-			###''')
 			Files.write(destination.toPath(), cell.getCode().get().getBytes(), StandardOpenOption.CREATE)
 		} else if(cell instanceof MuseSquareCell) {
 			cell.getChildren().forEach[save(it)]
@@ -76,7 +78,11 @@ class Project {
 		return new File(getLocation(), "src")
 	}
 
-	def getOutputPath() {
+	def getJavaSourcePath() {
+		return new File(getLocation(), "java")
+	}
+
+	def getTarget() {
 		return new File(getLocation(), "target")
 	}
 

@@ -122,7 +122,6 @@ class Muse extends Application {
 					graph.getCanvas().maxHeightProperty().bind(centerSpace.heightProperty())
 					stackPane.getChildren().set(0, graph.getCanvas())
 					stackPane.getChildren().add(overlay)
-
 				}
 			}
 		]
@@ -132,10 +131,14 @@ class Muse extends Application {
 			onAction = [
 				project.compile()
 			]
+		], new Button("Run") => [
+			onAction = [
+				new MuseEngine().run(project)
+			]
 		])
 		overlay.setTop(toolbar)
 
-		val scene = new Scene(stackPane, 1024, 768)
+		val scene = new Scene(stackPane, 1600, 900)
 		scene.getStylesheets().add(getClass().getResource("/application.css").toExternalForm())
 		scene.addEventHandler(KeyEvent.KEY_RELEASED) [
 			if(getCode().equals(KeyCode.LEFT) && isAltDown()) {
