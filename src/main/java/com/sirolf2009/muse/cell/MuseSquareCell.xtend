@@ -3,8 +3,10 @@ package com.sirolf2009.muse.cell
 import com.fxgraph.graph.Graph
 import com.fxgraph.graph.ICell
 import com.fxgraph.graph.Model
+import com.sirolf2009.muse.Project
 import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
+import javafx.collections.ListChangeListener.Change
 import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
@@ -15,15 +17,20 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import javafx.scene.transform.Scale
+import org.eclipse.xtend.lib.annotations.Accessors
 
-class MuseSquareCell extends MuseCell {
+@Accessors class MuseSquareCell extends MuseCell {
+	
+	val Model model
 
-	new(Model model) {
-		super(model)
+	new(Project project) {
+		super(project)
+		model = new Model()
 	}
 
-	new(MuseCell parent) {
-		super(parent)
+	new(Project project, MuseCell parent) {
+		super(project, parent)
+		model = new Model()
 	}
 
 	override getGraphic(Graph graph) {
@@ -111,6 +118,31 @@ class MuseSquareCell extends MuseCell {
 				}
 			]
 		]
+	}
+	
+	override getDepth() {
+		if(model.getAllCells().filter[it instanceof MuseCell].isEmpty()) {
+			return 0
+		} else {
+			model.getAllCells().filter[it instanceof MuseCell].map[it as MuseCell].map[getDepth()].max() + 1
+		}
+	}
+	
+	override getChildren() {
+		val childNodes = FXCollections.observableArrayList(model.getAllCells().filter[it instanceof MuseCell].map[it as MuseCell].toList())
+		model.getAllCells().addListener(new ListChangeListener<ICell>() {
+			override onChanged(Change<? extends ICell> c) {
+				while(c.next()) {
+					c.getAddedSubList().filter[it instanceof MuseCell].map[it as MuseCell].forEach [
+						childNodes.add(it)
+					]
+					c.getRemoved().filter[it instanceof MuseCell].map[it as MuseCell].forEach [
+						childNodes.add(it)
+					]
+				}
+			}
+		})
+		return childNodes
 	}
 
 }

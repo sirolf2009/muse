@@ -1,6 +1,9 @@
 package com.sirolf2009.muse
 
 import java.io.Closeable
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardOpenOption
 import java.time.Duration
 import java.util.Collection
 import java.util.Collections
@@ -26,7 +29,7 @@ class XtendEditor extends CodeArea implements Closeable {
         "new", "package", "private", "protected", "public",
         "return", "short", "static", "strictfp", "super",
         "switch", "synchronized", "this", "throw", "throws",
-		"transient", "try", "void", "volatile", "while", "val", "var"
+		"transient", "try", "void", "volatile", "while", "val", "var", "override"
 	]
 	
 	static val String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
@@ -46,11 +49,12 @@ class XtendEditor extends CodeArea implements Closeable {
             + "|(?<STRING>" + STRING_PATTERN + ")"
             + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
 	)
-	val ExecutorService executor
+	static val ExecutorService executor = Executors.newSingleThreadExecutor()
+	val File sourceFile
 	
-	new() {
+	new(File sourceFile) {
+		this.sourceFile = sourceFile
 		getStylesheets().add(XtendEditor.getClassLoader().getResource("xtend-keywords.css").toExternalForm())
-		executor = Executors.newSingleThreadExecutor()
 		setParagraphGraphicFactory(LineNumberFactory.get(this))
 		multiPlainChanges()
                 .successionEnds(Duration.ofMillis(500))
@@ -76,9 +80,9 @@ class XtendEditor extends CodeArea implements Closeable {
             override call() throws Exception {
                 return computeHighlighting(text)
             }
-        };
-        executor.execute(task);
-        return task;
+        }
+        executor.execute(task)
+        return task
     }
 
     def applyHighlighting(StyleSpans<Collection<String>> highlighting) {
@@ -105,6 +109,10 @@ class XtendEditor extends CodeArea implements Closeable {
         }
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
-}
+	}
+	
+	def save() {
+		Files.write(sourceFile.toPath(), getText().getBytes(), StandardOpenOption.CREATE)
+	}
 	
 }
