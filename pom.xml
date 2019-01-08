@@ -112,24 +112,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.sirolf2009</groupId>
-			<artifactId>fxgraph</artifactId>
-			<version>0.0.3-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.sirolf2009</groupId>
-			<artifactId>treeviewhierarchy</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.miglayout</groupId>
-			<artifactId>miglayout-javafx</artifactId>
-			<version>5.2</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.eclipse.xtend</groupId>
 			<artifactId>org.eclipse.xtend.core</artifactId>
 			<version>2.15.0</version>
@@ -151,6 +133,24 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.almasb</groupId>
+			<artifactId>fxgl</artifactId>
+			<version>0.5.4</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy</artifactId>
+			<version>2.5.4</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.sirolf2009</groupId>
+			<artifactId>fxgraph</artifactId>
+			<version>0.0.3</version>
 		</dependency>
 	</dependencies>
 
