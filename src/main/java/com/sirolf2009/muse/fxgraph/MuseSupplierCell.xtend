@@ -6,5 +6,8 @@ import javafx.beans.value.ObservableValue
 abstract class MuseSupplierCell extends MuseCell {
 	
 	def ObservableValue<? extends ISupplier<?>> supplierProperty()
-	
+	def ISupplier<?> getSupplier() {
+		return supplierProperty().getValue()
+	}
+
 }
