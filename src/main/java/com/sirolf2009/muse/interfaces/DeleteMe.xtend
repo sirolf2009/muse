@@ -60,11 +60,11 @@ class DeleteMe {
 	static class SimpleConsumer extends AbstractConnectable {
 
 		
-		val input = new SubjectConnector(this, PublishSubject.<Long>create())
+		val input = new SubjectConnector(this, PublishSubject.<Date>create())
 
 		new() {
 			input.getData().subscribe [
-				println(new Date(it))
+				println(it)
 			]
 		}
 
@@ -85,12 +85,12 @@ class DeleteMe {
 	static class SimpleConverter extends AbstractConnectable {
 
 		val IConnector<Long> input
-		val IConnector<Long> output
+		val IConnector<Date> output
 
 		new() {
 			input = new SubjectConnector(this, PublishSubject.<Long>create()) 
-			output = new SubjectConnector(this, PublishSubject.<Long>create())
-			input.getData().map[it * 2].subscribe(output.getObserver())
+			output = new SubjectConnector(this, PublishSubject.<Date>create())
+			input.getData().map[new Date(it)].subscribe(output.getObserver())
 		}
 
 		override getInputs() {

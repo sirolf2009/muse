@@ -9,9 +9,11 @@ import org.graphstream.graph.Edge
 import org.graphstream.graph.Graph
 import org.graphstream.graph.Node
 import org.graphstream.graph.implementations.SingleGraph
+import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 class GraphStreamTest {
-	
+
 	def static void main(String[] args) {
 		new GraphStreamTest();
 	}
@@ -26,63 +28,65 @@ class GraphStreamTest {
 
 		graph.addEdge("SC", "SimpleSupplier", "SimpleConverter", true)
 		graph.addEdge("CC", "SimpleConverter", "SimpleConsumer", true)
-		
+
 		graph.getNode("SimpleSupplier").addAttribute("muse.connectable", new SimpleSupplier())
 		graph.getNode("SimpleConverter").addAttribute("muse.connectable", new SimpleConverter())
 		graph.getNode("SimpleConsumer").addAttribute("muse.connectable", new SimpleConsumer())
-		
-		
-		println("### Simple Supplier ###")
-		graph.getNode("SimpleSupplier") => [
-			getEachEnteringEdge().forEach[println('''Entering «it»''')]
-			getEachLeavingEdge().forEach[println('''Leaving «it»''')]
-		]
-		println()
-		println("### Simple Converter ###")
-		graph.getNode("SimpleConverter") => [
-			getEachEnteringEdge().forEach[println('''Entering «it»''')]
-			getEachLeavingEdge().forEach[println('''Leaving «it»''')]
-		]
-		println()
 
 		for (Node node : graph) {
 			node.addAttribute("ui.label", node.getId());
 		}
-		
+
 		val connectAlgo = new ConnectAlgorithm()
 		connectAlgo.init(graph)
 		connectAlgo.compute()
-		
+
 		Thread.sleep(8000)
 	}
 
-	protected String styleSheet = "node {" + "	fill-color: black;" + "}" + "node.marked {" + "	fill-color: red;" +
-		"}";
-		
-		
+	protected String styleSheet = '''
+	node {
+		fill-color: black;
+	}
+	node.marked {
+		fill-color: red;
+	}
+	edge {
+		fill-color: black;
+	}
+	edge.marked {
+		fill-color: red;
+		size: 2px;
+	}'''
+
 	static class ConnectAlgorithm implements Algorithm {
-		
+
 		var Graph graph
-		
+
 		override init(Graph graph) {
 			this.graph = graph
 		}
-		
+
 		override compute() {
-			graph.<Node>getNodeSet().forEach[
-				println("Processing node "+it);
+			graph.<Node>getNodeSet().forEach [
 				val source = getAttribute("muse.connectable", IConnectable);
-				<Edge>getEachLeavingEdge.map[
-					getTargetNode() as Node
-				].forEach[node|
+				<Edge>getEachLeavingEdge.forEach [ edge |
+					val node = edge.getTargetNode() as Node
 					val sink = node.getAttribute("muse.connectable", IConnectable)
-					println('''Connecting «sink» to «source»''')
 					source.getOutputs().get(0).getData().subscribe(sink.getInputs().get(0).getObserver())
 					setAttribute("ui.class", "marked")
-					node.setAttribute("ui.class", "marked")
+					source.getOutputs().get(0).getData().observeOn(Schedulers.computation()).doOnNext[
+						edge.setAttribute("ui.class", "marked")
+					].delay(500, TimeUnit.MILLISECONDS).subscribe [
+						edge.setAttribute("ui.class", "")
+					]
+
+					source.getOutputs().get(0).getData().subscribe [
+						edge.addAttribute("ui.label", toString())
+					]
 				]
 			]
-		}		
-		
+		}
+
 	}
 }
