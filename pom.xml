@@ -100,12 +100,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>io.reactivex.rxjava2</groupId>
-			<artifactId>rxjava</artifactId>
-			<version>2.1.14</version>
-		</dependency>
-
-		<dependency>
 			<groupId>com.sirolf2009</groupId>
 			<artifactId>sirutil</artifactId>
 			<version>0.0.4-SNAPSHOT</version>
@@ -123,53 +117,10 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.fxmisc.richtext</groupId>
-			<artifactId>richtextfx</artifactId>
-			<version>0.9.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.reactivex.rxjava2</groupId>
-			<artifactId>rxjava</artifactId>
-			<version>2.2.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.6</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.github.almasb</groupId>
-			<artifactId>fxgl</artifactId>
-			<version>0.5.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy</artifactId>
-			<version>2.5.4</version>
-		</dependency>
-
-		<dependency>
 			<groupId>com.sirolf2009</groupId>
 			<artifactId>fxgraph</artifactId>
 			<version>0.0.3</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.graphstream</groupId>
-			<artifactId>gs-core</artifactId>
-			<version>1.2</version>
-			<optional>false</optional>
-		</dependency>
-		<!-- <dependency>
-			<groupId>org.graphstream</groupId>
-			<artifactId>gs-ui</artifactId>
-			<version>1.2</version>
-			<optional>false</optional>
-		</dependency> -->
 
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
