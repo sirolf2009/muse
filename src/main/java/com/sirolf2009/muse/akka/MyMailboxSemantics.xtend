@@ -1,5 +1,7 @@
 package com.sirolf2009.muse.akka
 
-interface MyMailboxSemantics {
+import akka.^dispatch.UnboundedMessageQueueSemantics
+
+interface MyMailboxSemantics extends UnboundedMessageQueueSemantics {
 	
 }

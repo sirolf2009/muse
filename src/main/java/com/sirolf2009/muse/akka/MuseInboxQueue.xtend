@@ -18,11 +18,10 @@ class MuseInboxQueue implements MessageQueue, MyMailboxSemantics {
 		this.system = system
 	}
 
-	// these must be implemented; queue used as example
 	override enqueue(ActorRef receiver, Envelope handle) {
 		queue.offer(handle)
-		if(handle.message() instanceof EventMessage) {
-			system.get().getEventStream().publish(new EventMessage(new Date(), handle))
+		if(!(handle.message() instanceof Event)) {
+			system.get().getEventStream().publish(new EventMessage(new Date(), handle, receiver, numberOfMessages()))
 		}
 	}
 
