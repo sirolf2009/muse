@@ -10,7 +10,6 @@
 	<name>Muse</name>
 	<description>Order from Chaos</description>
 
-	<packaging>pom</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<organization>
@@ -66,6 +65,50 @@
 					<outputDirectory>${project.build.directory}/xtend-gen/main</outputDirectory>
 					<testOutputDirectory>${project.build.directory}/xtend-gen/test</testOutputDirectory>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>com.sirolf2009.muse.akka.AkkaFXGraphServer</mainClass>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4.1</version>
+				<configuration>
+					<!-- get all project dependencies -->
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<!-- MainClass in mainfest make a executable jar -->
+					<archive>
+						<manifest>
+							<mainClass>com.sirolf2009.muse.akka.AkkaFXGraphServer</mainClass>
+						</manifest>
+					</archive>
+
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<!-- bind to the packaging phase -->
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -127,7 +170,17 @@
 			<artifactId>akka-actor_2.12</artifactId>
 			<version>2.5.21</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>com.typesafe.akka</groupId>
+			<artifactId>akka-remote_2.12</artifactId>
+			<version>2.5.21</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty</artifactId>
+			<version>3.10.5.Final</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>

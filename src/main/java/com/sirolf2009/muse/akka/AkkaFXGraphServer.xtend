@@ -11,16 +11,16 @@ import com.fxgraph.layout.AbegoTreeLayout
 import com.typesafe.config.ConfigFactory
 import java.util.HashMap
 import java.util.Map
-import java.util.Random
 import javafx.animation.PathTransition
 import javafx.application.Application
 import javafx.application.Platform
 import javafx.beans.property.DoubleProperty
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.geometry.Insets
+import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.Scene
-import javafx.scene.control.Label
+import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
 import javafx.scene.control.ProgressBar
 import javafx.scene.layout.BorderPane
@@ -37,56 +37,75 @@ import org.abego.treelayout.Configuration.Location
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
-import javafx.geometry.Pos
 
 class AkkaFXGraphServer extends Application {
+	
+	//TODO idea, listen for a subset of (or all) actors and plot their comms in a sequence diagram
 
 	override start(Stage primaryStage) throws Exception {
 		val root = new BorderPane() => [
-			setStyle("-fx-background-color: rgb(5, 50, 58);")
+			getStyleClass().add("map-background")
 		]
 
 		val graph = new Graph() => [
-			getCanvas().setStyle("-fx-background-color: rgb(5, 50, 58);")
+			getCanvas().getStyleClass().add("map-background")
 		]
-		val receivedList = new ListView<EventMessage>()
+		val receivedList = new ListView<EventMessage>() => [
+			setCellFactory [
+				return new ListCell<EventMessage>() {
+					
+					override protected updateItem(EventMessage item, boolean empty) {
+						if(item === null || empty) {
+							setText(null)
+						} else {
+							setText(item.toString())
+						}
+					}
+					
+				} => [
+					getStyleClass().add("white-text")
+				]
+			]
+		]
 
 		root.setCenter(graph.getCanvas())
 		root.setRight(receivedList)
 
 		val scene = new Scene(root, 1024, 768)
-		val system = ActorSystem.create("muse-server-system", ConfigFactory.load("application.conf"))
+		scene.getStylesheets().add("/styles.css")
+		val system = ActorSystem.create("muse-server-system", ConfigFactory.load("server.conf"))
 		val actor = system.actorOf(Props.create(ServerActor, graph, receivedList), "ServerActor")
 		system.eventStream().subscribe(actor, Event)
 
-		val dummy = system.actorOf(Props.create(DummyActor), "DummyActor")
-		val dummy2 = system.actorOf(Props.create(DummyActor), "DummyActor2")
+//		val dummy = system.actorOf(Props.create(DummyActor), "DummyActor")
+//		dummy.tell("test string", ActorRef.noSender())
+//		val dummy2 = system.actorOf(Props.create(DummyActor), "DummyActor2")
 		primaryStage.setScene(scene)
 		primaryStage.show()
 
-		new Thread [
-			while(true) {
-				Thread.sleep(1000)
-				if(new Random().nextInt(2) == 1) {
-					dummy.tell("Hello!", dummy2)
-					dummy.tell("Hello!", dummy2)
-				} else {
-					dummy.tell(new IGraphic() {
-
-						override getNode() {
-							return new Label("Hello!") => [
-								setStyle('''-fx-background-color: green; -fx-padding: 8px;''')
-							]
-						}
-						
-						override toString() {
-							return "Hello! label"
-						}
-
-					}, dummy2)
-				}
-			}
-		].start()
+//		new Thread [
+//			while(true) {
+//				Thread.sleep(1000)
+//				if(new Random().nextInt(2) == 1) {
+//					dummy.tell("Hello!", dummy2)
+//					dummy.tell("Hello!", dummy2)
+//				} else {
+//					dummy.tell(new IGraphic() {
+//
+//						override getNode() {
+//							return new Label("Hello!") => [
+//								setStyle('''-fx-background-color: green; -fx-padding: 8px;''')
+//							]
+//						}
+//						
+//						override toString() {
+//							return "Hello! label"
+//						}
+//
+//					}, dummy2)
+//				}
+//			}
+//		].start()
 	}
 
 	def static void main(String[] args) {
@@ -128,9 +147,8 @@ class AkkaFXGraphServer extends Application {
 					Platform.runLater [
 						val actor = getActor().get()
 						(0 ..< actor.path().elements().size()).forEach [
-							val name = actor.path().getElements().last()
+							val name = actor.path().getElements().get(it)
 							val path = actor.path().getElements().take(it + 1).join("/")
-							println(path)
 							if(!cells.containsKey(path)) {
 								val cell = new ServerCell(name)
 								graph.getModel().addCell(cell)
@@ -218,15 +236,11 @@ class AkkaFXGraphServer extends Application {
 
 		override getGraphic(Graph graph) {
 			val pane = new BorderPane()
-			pane.setStyle('''
-			-fx-border-color: azure;
-			-fx-border-width: 2px;
-			-fx-background-color: rgb(5, 50, 58);
-			-fx-text-fill: azure''')
+			pane.getStyleClass().add("cell")
 			pane.setPrefSize(50, 50)
 			
 			new Text(path) => [
-				setStyle("-fx-fill: azure;")
+				getStyleClass().add("white-text")
 				BorderPane.setMargin(it, new Insets(10))
 				BorderPane.setAlignment(it, Pos.CENTER)
 				pane.setCenter(it)
@@ -234,6 +248,7 @@ class AkkaFXGraphServer extends Application {
 			
 			new ProgressBar() => [
 				progressProperty().bind(loadProperty)
+				setMouseTransparent(true)
 				BorderPane.setAlignment(it, Pos.CENTER)
 				pane.setBottom(it)
 			]

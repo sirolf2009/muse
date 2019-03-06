@@ -20,7 +20,7 @@ class MuseInboxQueue implements MessageQueue, MyMailboxSemantics {
 
 	override enqueue(ActorRef receiver, Envelope handle) {
 		queue.offer(handle)
-		if(!(handle.message() instanceof Event)) {
+		if(!(handle.message() instanceof Event) && !handle.message().getClass().toString().split(" ").get(1).startsWith("akka")) {
 			system.get().getEventStream().publish(new EventMessage(new Date(), handle, receiver, numberOfMessages()))
 		}
 	}
