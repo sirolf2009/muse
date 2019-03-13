@@ -3,16 +3,20 @@
 .map-background {
     -fx-background-color: rgb(5, 50, 58);
 }
+.white-background {
+    -fx-background-color: white;
+}
+
 .white-text {
 	-fx-fill: azure;
 	-fx-text-fill: azure;
 }
 
-.cell {
+.graph-cell {
 	-fx-border-color: azure;
 	-fx-border-width: 2px;
 	-fx-background-color: rgb(5, 50, 58);
 }
-.cell:hover {
+.graph-cell:hover {
 	-fx-background-color: rgb(35, 80, 88);
 }

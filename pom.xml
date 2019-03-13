@@ -158,6 +158,18 @@
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.testfx</groupId>
+			<artifactId>testfx-core</artifactId>
+			<version>4.0.15-alpha</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testfx</groupId>
+			<artifactId>testfx-junit</artifactId>
+			<version>4.0.15-alpha</version>
+			<scope>test</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>com.sirolf2009</groupId>
@@ -174,6 +186,12 @@
 			<groupId>com.typesafe.akka</groupId>
 			<artifactId>akka-remote_2.12</artifactId>
 			<version>2.5.21</version>
+		</dependency>
+		<dependency>
+			<groupId>com.typesafe.akka</groupId>
+			<artifactId>akka-testkit_2.12</artifactId>
+			<version>2.5.21</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.netty</groupId>

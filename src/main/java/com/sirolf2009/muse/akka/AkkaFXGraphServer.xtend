@@ -5,107 +5,59 @@ import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.event.Logging
-import com.fxgraph.cells.AbstractCell
 import com.fxgraph.graph.Graph
 import com.fxgraph.layout.AbegoTreeLayout
+import com.sirolf2009.muse.akka.server.graph.ServerCell
 import com.typesafe.config.ConfigFactory
 import java.util.HashMap
 import java.util.Map
+import java.util.Optional
 import javafx.animation.PathTransition
 import javafx.application.Application
 import javafx.application.Platform
-import javafx.beans.property.DoubleProperty
-import javafx.beans.property.SimpleDoubleProperty
-import javafx.geometry.Insets
-import javafx.geometry.Pos
+import javafx.geometry.Orientation
 import javafx.scene.Node
 import javafx.scene.Scene
-import javafx.scene.control.ListCell
-import javafx.scene.control.ListView
-import javafx.scene.control.ProgressBar
-import javafx.scene.layout.BorderPane
-import javafx.scene.layout.StackPane
-import javafx.scene.paint.Color
-import javafx.scene.shape.Circle
+import javafx.scene.control.Label
+import javafx.scene.control.SplitPane
+import javafx.scene.control.TableView
 import javafx.scene.shape.LineTo
 import javafx.scene.shape.MoveTo
 import javafx.scene.shape.Path
-import javafx.scene.text.Text
+import javafx.scene.text.Font
 import javafx.stage.Stage
 import javafx.util.Duration
 import org.abego.treelayout.Configuration.Location
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics
-import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 
 class AkkaFXGraphServer extends Application {
-	
-	//TODO idea, listen for a subset of (or all) actors and plot their comms in a sequence diagram
 
+	// TODO idea, listen for a subset of (or all) actors and plot their comms in a sequence diagram
 	override start(Stage primaryStage) throws Exception {
-		val root = new BorderPane() => [
+		val root = new SplitPane() => [
+			setOrientation(Orientation.VERTICAL)
 			getStyleClass().add("map-background")
 		]
 
 		val graph = new Graph() => [
 			getCanvas().getStyleClass().add("map-background")
 		]
-		val receivedList = new ListView<EventMessage>() => [
-			setCellFactory [
-				return new ListCell<EventMessage>() {
-					
-					override protected updateItem(EventMessage item, boolean empty) {
-						if(item === null || empty) {
-							setText(null)
-						} else {
-							setText(item.toString())
-						}
-					}
-					
-				} => [
-					getStyleClass().add("white-text")
-				]
-			]
-		]
+		val table = new EventMessageTable()
+		val graphNew = new ActorGraph()
 
-		root.setCenter(graph.getCanvas())
-		root.setRight(receivedList)
+		root.getItems().addAll(graphNew, table)
 
 		val scene = new Scene(root, 1024, 768)
 		scene.getStylesheets().add("/styles.css")
 		val system = ActorSystem.create("muse-server-system", ConfigFactory.load("server.conf"))
-		val actor = system.actorOf(Props.create(ServerActor, graph, receivedList), "ServerActor")
+		val actor = system.actorOf(Props.create(ServerActor, graph, table), "ServerActor")
 		system.eventStream().subscribe(actor, Event)
+		val actorGraph = system.actorOf(Props.create(ActorGraphActor, graphNew), "ActorGraph")
+		system.eventStream().subscribe(actorGraph, Event)
 
-//		val dummy = system.actorOf(Props.create(DummyActor), "DummyActor")
-//		dummy.tell("test string", ActorRef.noSender())
-//		val dummy2 = system.actorOf(Props.create(DummyActor), "DummyActor2")
 		primaryStage.setScene(scene)
 		primaryStage.show()
-
-//		new Thread [
-//			while(true) {
-//				Thread.sleep(1000)
-//				if(new Random().nextInt(2) == 1) {
-//					dummy.tell("Hello!", dummy2)
-//					dummy.tell("Hello!", dummy2)
-//				} else {
-//					dummy.tell(new IGraphic() {
-//
-//						override getNode() {
-//							return new Label("Hello!") => [
-//								setStyle('''-fx-background-color: green; -fx-padding: 8px;''')
-//							]
-//						}
-//						
-//						override toString() {
-//							return "Hello! label"
-//						}
-//
-//					}, dummy2)
-//				}
-//			}
-//		].start()
 	}
 
 	def static void main(String[] args) {
@@ -115,13 +67,13 @@ class AkkaFXGraphServer extends Application {
 	@FinalFieldsConstructor static class ServerActor extends AbstractActor {
 
 		val Graph graph
-		val ListView<EventMessage> listView
+		val TableView<EventMessage> table
 		var ActorRef graphActor
 		var ActorRef listActor
 
 		override preStart() throws Exception {
 			graphActor = context().actorOf(Props.create(GraphActor, graph), "Graph")
-			listActor = context().actorOf(Props.create(ReceivedListActor, listView), "List")
+			listActor = context().actorOf(Props.create(ReceivedTableActor, table), "Table")
 		}
 
 		override createReceive() {
@@ -137,6 +89,7 @@ class AkkaFXGraphServer extends Application {
 
 	@FinalFieldsConstructor static class GraphActor extends AbstractActor {
 
+		val log = Logging.getLogger(getContext().getSystem(), this)
 		val Graph graph
 		val Map<String, ServerCell> cells = new HashMap()
 		val Map<String, ActorRef> cellManagers = new HashMap()
@@ -165,106 +118,99 @@ class AkkaFXGraphServer extends Application {
 						]
 						graph.endUpdate()
 						graph.layout(new AbegoTreeLayout(200, 200, Location.Bottom))
+						graph.getModel().getAllEdges().forEach[
+							graph.getGraphic(it).toBack()
+						]
 					]
 				}
 			].match(EventMessage) [
-				val senderCell = cells.get(getEnvelope().sender().path().getElements().join("/"))
-				val receiverCell = cells.get(getTarget().path().getElements().join("/"))
-				val messageObj = getEnvelope().message()
-				val message = if(messageObj instanceof IGraphic)
-						messageObj.getNode()
-					else
-						new StackPane(new Circle(12) => [
-							setFill(Color.AQUAMARINE)
-						], new Text(getEnvelope().message().toString()))
-				val path = new Path()
-				path.getElements().add(new MoveTo(graph.getGraphic(senderCell).getLayoutX(), graph.getGraphic(senderCell).getLayoutY()))
-				val lineTo = new LineTo()
-				lineTo.xProperty().bind(graph.getGraphic(receiverCell).layoutXProperty())
-				lineTo.yProperty().bind(graph.getGraphic(receiverCell).layoutYProperty())
-				path.getElements().add(lineTo)
+				val senderPath = getEnvelope().sender().path().getElements().join("/")
+				val senderCell = cells.get(senderPath)
+				val receiverPath = getTarget().path().getElements().join("/")
+				val receiverCell = cells.get(receiverPath)
+				if(senderCell !== null && receiverCell !== null) {
+					val messageObj = getEnvelope().message()
+					val message = if(messageObj instanceof IGraphic)
+							messageObj.getNode()
+						else
+							new Label(getEnvelope().message().toString()) => [
+								setFont(new Font("Verdana", 8))
+								setStyle('''
+								-fx-background-color: aquamarine;
+								-fx-background-radius: 16.4, 15;''')
+							]
+					val path = new Path()
+					path.getElements().add(new MoveTo(graph.getGraphic(senderCell).getLayoutX(), graph.getGraphic(senderCell).getLayoutY()))
+					val lineTo = new LineTo()
+					lineTo.xProperty().bind(graph.getGraphic(receiverCell).layoutXProperty())
+					lineTo.yProperty().bind(graph.getGraphic(receiverCell).layoutYProperty())
+					path.getElements().add(lineTo)
 
-				Platform.runLater [
-					graph.getCanvas().getChildren().add(message)
-					new PathTransition(Duration.seconds(2), path, message) => [
-						onFinished = [graph.getCanvas().getChildren().remove(message)]
-						play()
+					Platform.runLater [
+						graph.getCanvas().getChildren().add(message)
+						new PathTransition(Duration.seconds(1), path, message) => [
+							onFinished = [graph.getCanvas().getChildren().remove(message)]
+							play()
+						]
 					]
-				]
-				
-				cellManagers.get(getTarget().path().getElements().join("/")).tell(it, self())
+
+					cellManagers.get(receiverPath).tell(it, self())
+				} else {
+					log.error('''
+					Failed to find corresponding receiver/sender.
+					Message: «it»
+					sender: «senderCell» «senderPath»
+					receiver: «receiverCell» «receiverPath»
+					cells: «cells»''')
+				}
 			].build()
+		}
+		
+		override preRestart(Throwable reason, Optional<Object> message) throws Exception {
+			log.error(reason, "GraphActor failed because of "+message)
 		}
 
 	}
-	
+
 	@FinalFieldsConstructor static class GraphCellActor extends AbstractActor {
-		
+
 		val ServerCell cell
 		val statistics = new SummaryStatistics()
-		
+
 		override createReceive() {
 			return receiveBuilder().match(EventMessage) [
 				statistics.addValue(getQueueSize())
 				val load = getQueueSize() / statistics.getMax()
-				Platform.runLater[
+				Platform.runLater [
 					cell.getLoadProperty().set(load)
 				]
 			].build()
 		}
-		
+
 	}
 
-	@FinalFieldsConstructor static class ReceivedListActor extends AbstractActor {
+	@FinalFieldsConstructor static class ReceivedTableActor extends AbstractActor {
 
-		val ListView<EventMessage> listView
+		val TableView<EventMessage> table
 
 		override createReceive() {
 			return receiveBuilder().match(EventMessage) [
 				Platform.runLater [
-					listView.getItems().add(it)
+					table.getItems().add(it)
 				]
 			].build()
-		}
-
-	}
-
-	@FinalFieldsConstructor @Accessors static class ServerCell extends AbstractCell {
-
-		val String path
-		val DoubleProperty loadProperty = new SimpleDoubleProperty()
-
-		override getGraphic(Graph graph) {
-			val pane = new BorderPane()
-			pane.getStyleClass().add("cell")
-			pane.setPrefSize(50, 50)
-			
-			new Text(path) => [
-				getStyleClass().add("white-text")
-				BorderPane.setMargin(it, new Insets(10))
-				BorderPane.setAlignment(it, Pos.CENTER)
-				pane.setCenter(it)
-			]
-			
-			new ProgressBar() => [
-				progressProperty().bind(loadProperty)
-				setMouseTransparent(true)
-				BorderPane.setAlignment(it, Pos.CENTER)
-				pane.setBottom(it)
-			]
-			
-			return pane
 		}
 
 	}
 
 	static class DummyActor extends AbstractActor {
-		
+
 		val log = Logging.getLogger(getContext().getSystem(), this)
 
 		override createReceive() {
 			return receiveBuilder().matchAny [
 				log.info(toString())
+				println("dummy actor printed")
 			].build()
 		}
 
