@@ -3,14 +3,13 @@ package com.sirolf2009.muse.akka
 import akka.actor.AbstractActor
 import com.fxgraph.graph.Graph
 import com.fxgraph.graph.IEdge
-import com.fxgraph.layout.AbegoTreeLayout
 import com.sirolf2009.muse.akka.server.graph.ServerCell
 import java.io.Serializable
 import javafx.application.Platform
 import javafx.beans.property.BooleanProperty
 import javafx.beans.property.IntegerProperty
+import javafx.collections.FXCollections
 import javafx.collections.ObservableList
-import org.abego.treelayout.Configuration.Location
 import org.eclipse.xtend.lib.annotations.Data
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 
@@ -20,22 +19,26 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 	val BooleanProperty locked
 	val IntegerProperty cursor
 	val ObservableList<GraphOperation> actions
+	val ObservableList<GraphOperation> lockedQueue = FXCollections.observableArrayList()
 
 	override createReceive() {
 		receiveBuilder().match(GraphOperation) [
-			actions.add(it)
 			if(!locked.get()) {
+				actions.add(it)
 				cursor.set(actions.size() - 1)
 				Platform.runLater [
 					apply(graph)
 					graph.endUpdate()
-					graph.layout(new AbegoTreeLayout(200, 200, Location.Bottom))
 				]
+			} else {
+				lockedQueue.add(it)
 			}
 		].match(Lock) [
 			locked.set(true)
 		].match(Unlock) [
 			locked.set(false)
+			actions.addAll(lockedQueue)
+			lockedQueue.clear()
 			navigateTo(actions.size() - 1)
 		].match(NavigateTo) [
 			navigateTo(index)

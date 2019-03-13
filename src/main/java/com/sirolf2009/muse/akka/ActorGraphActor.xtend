@@ -144,7 +144,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 
 		def getPath(Graph graph, ICell from, ICell to) {
 			val path = new Path()
-			path.getElements().add(new MoveTo(graph.getGraphic(from).getLayoutX(), graph.getGraphic(to).getLayoutY()))
+			path.getElements().add(new MoveTo(graph.getGraphic(from).getLayoutX(), graph.getGraphic(from).getLayoutY()))
 			val lineTo = new LineTo()
 			lineTo.xProperty().bind(graph.getGraphic(to).layoutXProperty())
 			lineTo.yProperty().bind(graph.getGraphic(to).layoutYProperty())

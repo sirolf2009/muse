@@ -35,7 +35,7 @@ class AkkaFXGraphServer extends Application {
 
 	// TODO idea, listen for a subset of (or all) actors and plot their comms in a sequence diagram
 	override start(Stage primaryStage) throws Exception {
-		val root = new SplitPane() => [
+		val main = new SplitPane() => [
 			setOrientation(Orientation.VERTICAL)
 			getStyleClass().add("map-background")
 		]
@@ -46,9 +46,9 @@ class AkkaFXGraphServer extends Application {
 		val table = new EventMessageTable()
 		val graphNew = new ActorGraph()
 
-		root.getItems().addAll(graphNew, table)
+		main.getItems().addAll(graphNew, table)
 
-		val scene = new Scene(root, 1024, 768)
+		val scene = new Scene(main, 1024, 768)
 		scene.getStylesheets().add("/styles.css")
 		val system = ActorSystem.create("muse-server-system", ConfigFactory.load("server.conf"))
 		val actor = system.actorOf(Props.create(ServerActor, graph, table), "ServerActor")
