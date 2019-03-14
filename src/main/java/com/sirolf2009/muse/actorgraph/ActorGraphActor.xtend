@@ -1,20 +1,20 @@
-package com.sirolf2009.muse.akka
+package com.sirolf2009.muse.actorgraph
 
 import akka.actor.AbstractActor
 import akka.actor.ActorRef
 import akka.actor.Props
 import akka.event.Logging
-import com.fxgraph.edges.Edge
 import com.fxgraph.graph.Graph
 import com.fxgraph.graph.ICell
-import com.sirolf2009.muse.akka.AkkaFXGraphServer.IGraphic
-import com.sirolf2009.muse.akka.FXGraphActor.AddEdge
-import com.sirolf2009.muse.akka.FXGraphActor.AddNode
-import com.sirolf2009.muse.akka.FXGraphActor.GraphOperation
-import com.sirolf2009.muse.akka.FXGraphActor.Lock
-import com.sirolf2009.muse.akka.FXGraphActor.NavigateTo
-import com.sirolf2009.muse.akka.FXGraphActor.Unlock
-import com.sirolf2009.muse.akka.server.graph.ServerCell
+import com.sirolf2009.muse.EventMessage
+import com.sirolf2009.muse.EventSpawn
+import com.sirolf2009.muse.FXGraphActor
+import com.sirolf2009.muse.FXGraphActor.AddEdge
+import com.sirolf2009.muse.FXGraphActor.AddNode
+import com.sirolf2009.muse.FXGraphActor.GraphOperation
+import com.sirolf2009.muse.FXGraphActor.Lock
+import com.sirolf2009.muse.FXGraphActor.NavigateTo
+import com.sirolf2009.muse.FXGraphActor.Unlock
 import java.util.HashMap
 import java.util.Map
 import javafx.animation.PathTransition
@@ -25,6 +25,7 @@ import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
 import javafx.scene.Node
 import javafx.scene.control.Label
+import javafx.scene.shape.ArcTo
 import javafx.scene.shape.LineTo
 import javafx.scene.shape.MoveTo
 import javafx.scene.shape.Path
@@ -78,7 +79,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 						if(it > 0) {
 							val parent = actor.path().getElements().take(it).join("/")
 							if(cells.containsKey(parent)) {
-								graphActor.tell(new AddEdge(new Edge(cells.get(parent), cells.get(path))), getSelf())
+								graphActor.tell(new AddEdge(new ServerEdge(cells.get(parent), cells.get(path))), getSelf())
 							}
 						}
 					]
@@ -119,27 +120,42 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 		val ICell receiverCell
 
 		override apply(Graph graph) {
-			val path = getPath(graph, senderCell, receiverCell)
+			val path = getAnimationPath(graph, senderCell, receiverCell)
 
 			Platform.runLater [
 				graph.getCanvas().getChildren().add(message)
+				message.toFront()
 				new PathTransition(Duration.seconds(1), path, message) => [
-					onFinished = [graph.getCanvas().getChildren().remove(message)]
+					onFinished = [
+						graph.getCanvas().getChildren().remove(message)
+						graph.getCanvas().getChildren().remove(path)
+					]
 					play()
 				]
 			]
 		}
 
 		override unapply(Graph graph) {
-			val path = getPath(graph, receiverCell, senderCell)
-			
+			val path = getAnimationPath(graph, receiverCell, senderCell)
+
 			Platform.runLater [
 				new PathTransition(Duration.seconds(1), path, message) => [
 					graph.getCanvas().getChildren().add(message)
-					onFinished = [graph.getCanvas().getChildren().remove(message)]
+					message.toFront()
+					onFinished = [
+						graph.getCanvas().getChildren().remove(message)
+						graph.getCanvas().getChildren().remove(path)
+					]
 					play()
 				]
 			]
+		}
+
+		def getAnimationPath(Graph graph, ICell from, ICell to) {
+			if(from.equals(to)) {
+				return getCircle(graph, from)
+			}
+			return getPath(graph, from, to)
 		}
 
 		def getPath(Graph graph, ICell from, ICell to) {
@@ -149,6 +165,15 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 			lineTo.xProperty().bind(graph.getGraphic(to).layoutXProperty())
 			lineTo.yProperty().bind(graph.getGraphic(to).layoutYProperty())
 			path.getElements().add(lineTo)
+			return path
+		}
+
+		def getCircle(Graph graph, ICell cell) {
+			val path = new Path()
+			val x = graph.getGraphic(cell).getLayoutX()
+			val y = graph.getGraphic(cell).getLayoutY()
+			path.getElements().add(new MoveTo(x, y))
+			path.getElements().add(new ArcTo(75, 75, 0, x - 1, y - 1, true, false))
 			return path
 		}
 

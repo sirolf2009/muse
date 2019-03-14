@@ -1,4 +1,4 @@
-package com.sirolf2009.muse.akka
+package com.sirolf2009.muse
 
 import akka.actor.ActorRef
 import org.eclipse.xtend.lib.annotations.Data

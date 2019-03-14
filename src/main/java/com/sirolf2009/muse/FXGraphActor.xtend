@@ -1,9 +1,9 @@
-package com.sirolf2009.muse.akka
+package com.sirolf2009.muse
 
 import akka.actor.AbstractActor
 import com.fxgraph.graph.Graph
 import com.fxgraph.graph.IEdge
-import com.sirolf2009.muse.akka.server.graph.ServerCell
+import com.sirolf2009.muse.actorgraph.ServerCell
 import java.io.Serializable
 import javafx.application.Platform
 import javafx.beans.property.BooleanProperty
@@ -57,7 +57,6 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 		Platform.runLater [
 			cursor.set(index)
 			graph.endUpdate()
-			graph.getModel().getAllEdges().forEach[graph.getGraphic(it).toBack()]
 		]
 	}
 

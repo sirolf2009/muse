@@ -1,4 +1,4 @@
-package com.sirolf2009.muse.akka
+package com.sirolf2009.muse.inbox
 
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
@@ -20,8 +20,8 @@ class MuseInboxQueue implements MessageQueue, MyMailboxSemantics {
 
 	override enqueue(ActorRef receiver, Envelope handle) {
 		queue.offer(handle)
-		if(!(handle.message() instanceof Event) && !handle.message().getClass().toString().split(" ").get(1).startsWith("akka")) {
-			system.get().getEventStream().publish(new EventMessage(new Date(), handle, receiver, numberOfMessages()))
+		if(!(handle.message() instanceof com.sirolf2009.muse.Event) && !handle.message().getClass().toString().split(" ").get(1).startsWith("akka")) {
+			system.get().getEventStream().publish(new com.sirolf2009.muse.EventMessage(new Date(), handle, receiver, numberOfMessages()))
 		}
 	}
 

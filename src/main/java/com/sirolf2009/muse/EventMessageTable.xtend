@@ -1,4 +1,4 @@
-package com.sirolf2009.muse.akka
+package com.sirolf2009.muse
 
 import akka.actor.ActorPath
 import java.util.Date

@@ -1,4 +1,4 @@
-package com.sirolf2009.muse.akka
+package com.sirolf2009.muse
 
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
@@ -7,14 +7,14 @@ import akka.testkit.TestKit
 import com.fxgraph.edges.Edge
 import com.fxgraph.graph.Graph
 import com.fxgraph.layout.AbegoTreeLayout
-import com.sirolf2009.muse.akka.FXGraphActor.AddEdge
-import com.sirolf2009.muse.akka.FXGraphActor.AddNode
-import com.sirolf2009.muse.akka.FXGraphActor.CursorRequest
-import com.sirolf2009.muse.akka.FXGraphActor.CursorResponse
-import com.sirolf2009.muse.akka.FXGraphActor.Lock
-import com.sirolf2009.muse.akka.FXGraphActor.NavigateTo
-import com.sirolf2009.muse.akka.FXGraphActor.Unlock
-import com.sirolf2009.muse.akka.server.graph.ServerCell
+import com.sirolf2009.muse.FXGraphActor.AddEdge
+import com.sirolf2009.muse.FXGraphActor.AddNode
+import com.sirolf2009.muse.FXGraphActor.CursorRequest
+import com.sirolf2009.muse.FXGraphActor.CursorResponse
+import com.sirolf2009.muse.FXGraphActor.Lock
+import com.sirolf2009.muse.FXGraphActor.NavigateTo
+import com.sirolf2009.muse.FXGraphActor.Unlock
+import com.sirolf2009.muse.actorgraph.ServerCell
 import javafx.scene.Scene
 import javafx.scene.layout.StackPane
 import javafx.stage.Stage

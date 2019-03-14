@@ -1,10 +1,11 @@
-package com.sirolf2009.muse.akka
+package com.sirolf2009.muse.inbox
 
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.^dispatch.MailboxType
 import akka.^dispatch.MessageQueue
 import akka.^dispatch.ProducesMessageQueue
+import com.sirolf2009.muse.EventSpawn
 import com.typesafe.config.Config
 import java.util.Date
 import scala.Option

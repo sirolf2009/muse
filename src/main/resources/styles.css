@@ -1,7 +1,8 @@
 /* Application wide styles */
 
 .map-background {
-    -fx-background-color: rgb(5, 50, 58);
+    /*-fx-background-color: rgb(5, 50, 58);*/
+    -fx-background-color: #2e4052;
 }
 .white-background {
     -fx-background-color: white;
@@ -12,11 +13,12 @@
 	-fx-text-fill: azure;
 }
 
-.graph-cell {
-	-fx-border-color: azure;
-	-fx-border-width: 2px;
-	-fx-background-color: rgb(5, 50, 58);
+.graph-cell .circle {
+	-fx-fill: #88d88d ;
 }
-.graph-cell:hover {
-	-fx-background-color: rgb(35, 80, 88);
+.graph-cell .circle:hover {
+	-fx-fill: #74f77c ;
+}
+.graph-edge {
+	-fx-stroke: azure ;
 }

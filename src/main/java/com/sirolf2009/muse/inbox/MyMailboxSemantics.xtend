@@ -1,4 +1,4 @@
-package com.sirolf2009.muse.akka
+package com.sirolf2009.muse.inbox
 
 import akka.^dispatch.UnboundedMessageQueueSemantics
 

@@ -1,4 +1,4 @@
-package com.sirolf2009.muse.akka
+package com.sirolf2009.muse.actorgraph
 
 import com.fxgraph.graph.Graph
 import com.fxgraph.layout.AbegoTreeLayout
@@ -33,7 +33,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 		slider.disableProperty().bind(lock.selectedProperty().not())
 		HBox.setHgrow(slider, Priority.ALWAYS)
 		setVgrow(graph.getCanvas(), Priority.ALWAYS)
-		getChildren().addAll(toolbar, graph.getCanvas(), new HBox(slider, lock))
+		getChildren().addAll(graph.getCanvas(), new HBox(slider, lock), toolbar)
 	}
 	
 }
