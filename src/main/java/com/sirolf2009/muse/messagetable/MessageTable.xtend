@@ -1,17 +1,18 @@
-package com.sirolf2009.muse
+package com.sirolf2009.muse.messagetable
 
 import akka.actor.ActorPath
+import com.sirolf2009.muse.EventMessage
 import java.util.Date
 import java.util.function.Function
 import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.Tooltip
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
-import javafx.beans.property.SimpleStringProperty
 
-class EventMessageTable extends TableView<EventMessage> {
+class MessageTable extends TableView<EventMessage> {
 
 	new() {
 		getColumns().addAll(new TableColumn<EventMessage, Date>("Date") => [
@@ -24,7 +25,7 @@ class EventMessageTable extends TableView<EventMessage> {
 			setCellFactory [ return new TableCellActorPath([getTarget().path()]) ]
 		], new TableColumn<EventMessage, String>("Message") => [
 			setCellValueFactory [ return new SimpleStringProperty(getValue().getEnvelope().message().toString())]
-			prefWidthProperty().bind(EventMessageTable.this.widthProperty())
+			prefWidthProperty().bind(MessageTable.this.widthProperty())
 		])
 	}
 

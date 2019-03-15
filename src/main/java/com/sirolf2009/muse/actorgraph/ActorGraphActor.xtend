@@ -6,6 +6,7 @@ import akka.actor.Props
 import akka.event.Logging
 import com.fxgraph.graph.Graph
 import com.fxgraph.graph.ICell
+import com.sirolf2009.muse.Event
 import com.sirolf2009.muse.EventMessage
 import com.sirolf2009.muse.EventSpawn
 import com.sirolf2009.muse.FXGraphActor
@@ -15,8 +16,11 @@ import com.sirolf2009.muse.FXGraphActor.GraphOperation
 import com.sirolf2009.muse.FXGraphActor.Lock
 import com.sirolf2009.muse.FXGraphActor.NavigateTo
 import com.sirolf2009.muse.FXGraphActor.Unlock
+import com.sirolf2009.muse.MuseServer.FocusMessage
 import java.util.HashMap
+import java.util.LinkedList
 import java.util.Map
+import java.util.concurrent.atomic.AtomicReference
 import javafx.animation.PathTransition
 import javafx.application.Platform
 import javafx.beans.property.SimpleBooleanProperty
@@ -42,6 +46,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 	val locked = new SimpleBooleanProperty()
 	val cursor = new SimpleIntegerProperty()
 	val actions = FXCollections.<GraphOperation>observableArrayList()
+	val messages = new LinkedList<Event>()
 	val log = Logging.getLogger(getContext().getSystem(), this)
 
 	override preStart() throws Exception {
@@ -65,6 +70,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 
 	override createReceive() {
 		return receiveBuilder().match(EventSpawn) [
+			messages.add(it)
 			if(getActor().isDefined()) {
 				Platform.runLater [
 					val actor = getActor().get()
@@ -86,6 +92,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 				]
 			}
 		].match(EventMessage) [
+			messages.add(it)
 			val senderPath = getEnvelope().sender().path().getElements().join("/")
 			val senderCell = cells.get(senderPath)
 			val receiverPath = getTarget().path().getElements().join("/")
@@ -110,6 +117,9 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 				receiver: «receiverCell» «receiverPath»
 				cells: «cells»''')
 			}
+		].match(FocusMessage) [
+			graph.getLock().setSelected(true)
+			graphActor.tell(new NavigateTo(messages.indexOf(getEventMessage())), getSelf())
 		].build()
 	}
 
@@ -118,20 +128,24 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 		val Node message
 		val ICell senderCell
 		val ICell receiverCell
+		val AtomicReference<PathTransition> animation = new AtomicReference()
 
 		override apply(Graph graph) {
 			val path = getAnimationPath(graph, senderCell, receiverCell)
 
 			Platform.runLater [
-				graph.getCanvas().getChildren().add(message)
-				message.toFront()
-				new PathTransition(Duration.seconds(1), path, message) => [
-					onFinished = [
-						graph.getCanvas().getChildren().remove(message)
-						graph.getCanvas().getChildren().remove(path)
+				try {
+					graph.getCanvas().getChildren().add(message)
+					message.toFront()
+					new PathTransition(Duration.seconds(1), path, message) => [
+						onFinished = [
+							graph.getCanvas().getChildren().remove(message)
+						]
+						playAnimation()
 					]
-					play()
-				]
+				} catch(Exception e) {
+					throw new RuntimeException('''Failed to unapply «message»''', e)
+				}
 			]
 		}
 
@@ -139,16 +153,27 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 			val path = getAnimationPath(graph, receiverCell, senderCell)
 
 			Platform.runLater [
-				new PathTransition(Duration.seconds(1), path, message) => [
-					graph.getCanvas().getChildren().add(message)
-					message.toFront()
-					onFinished = [
-						graph.getCanvas().getChildren().remove(message)
-						graph.getCanvas().getChildren().remove(path)
+				try {
+					new PathTransition(Duration.seconds(1), path, message) => [
+						graph.getCanvas().getChildren().add(message)
+						message.toFront()
+						onFinished = [
+							graph.getCanvas().getChildren().remove(message)
+						]
+						playAnimation()
 					]
-					play()
-				]
+				} catch(Exception e) {
+					throw new RuntimeException('''Failed to unapply «message»''', e)
+				}
 			]
+		}
+
+		def playAnimation(PathTransition anim) {
+			if(animation.get() !== null) {
+				animation.get().stop()
+			}
+			animation.set(anim)
+			anim.play()
 		}
 
 		def getAnimationPath(Graph graph, ICell from, ICell to) {
