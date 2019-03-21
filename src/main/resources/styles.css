@@ -1,5 +1,12 @@
 /* Application wide styles */
+.scroll-bar {
+	-fx-background-color: #2e4052;
+}
+.scroll-bar .thumb {
+	-fx-background-color: derive(#2e4052, 20.0%);
+}
 
+/* Re usable styles */
 .map-background {
     /*-fx-background-color: rgb(5, 50, 58);*/
     -fx-background-color: #2e4052;
@@ -13,6 +20,7 @@
 	-fx-text-fill: azure;
 }
 
+/* ActorGraph */
 .graph-cell .circle {
 	-fx-fill: #88d88d ;
 }
@@ -23,10 +31,11 @@
 	-fx-stroke: azure ;
 }
 
-.empty-table {
-    -fx-background-color: #2e4052;
-    -fx-text-fill: azure;
+/* Messages */
+.show-seq-diagram-btn {
+	-fx-padding: 0.0;
 }
+
 .message-table .table-row-cell:odd {
     -fx-background-color: #2e4052;
 }
@@ -34,27 +43,34 @@
      -fx-background-color: transparent;
 }
 .message-table .column-header-background{
-    -fx-background-color: derive(#2e4052, 20%);
+    -fx-background-color: derive(#2e4052, 20.0%);
 }
 .message-table .column-header-background .label{
     -fx-background-color: transparent;
     -fx-text-fill: azure;
 }
 .message-table .table-cell{
-    -fx-font-size: 11;
+    -fx-font-size: 11.0;
     -fx-text-fill: azure;
-    -fx-padding: 12;
+    -fx-padding: 12.0;
 }
 .message-table .table-row-cell {
-    -fx-background-color: derive(#2e4052, 20%);
+    -fx-background-color: derive(#2e4052, 20.0%);
 }
 .message-table .table-row-cell:odd {
-    -fx-background-color: derive(#2e4052, 10%);
+    -fx-background-color: derive(#2e4052, 10.0%);
 }
 
-.scroll-bar {
-	-fx-background-color: #2e4052;
+/* Sequence Diagram */
+.actor-cell .label {
+	-fx-text-fill: azure;
 }
-.scroll-bar .thumb {
-	-fx-background-color: derive(#2e4052, 20%);
+.actor-cell .life-line {
+	-fx-stroke: azure;
+}
+.edge-text {
+	-fx-text-fill: azure;
+}
+.arrow {
+	-fx-stroke: azure;
 }

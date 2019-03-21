@@ -106,7 +106,8 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 							setFont(new Font("Verdana", 8))
 							setStyle('''
 							-fx-background-color: aquamarine;
-							-fx-background-radius: 16.4, 15;''')
+							-fx-background-radius: 16.4, 15;
+							-fx-padding: 4;''')
 						]
 				graphActor.tell(new ShowMessage(message, senderCell, receiverCell), getSelf())
 			} else {
