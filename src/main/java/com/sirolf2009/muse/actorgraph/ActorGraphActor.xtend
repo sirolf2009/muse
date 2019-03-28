@@ -16,7 +16,7 @@ import com.sirolf2009.muse.FXGraphActor.GraphOperation
 import com.sirolf2009.muse.FXGraphActor.Lock
 import com.sirolf2009.muse.FXGraphActor.NavigateTo
 import com.sirolf2009.muse.FXGraphActor.Unlock
-import com.sirolf2009.muse.MuseServer.FocusMessage
+import com.sirolf2009.muse.InstanceActor.FocusMessage
 import java.util.HashMap
 import java.util.LinkedList
 import java.util.Map

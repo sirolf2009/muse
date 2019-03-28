@@ -4,9 +4,9 @@ import akka.actor.AbstractActor
 import akka.actor.ActorRef
 import akka.actor.Props
 import com.sirolf2009.muse.EventMessage
-import com.sirolf2009.muse.MuseServer.FocusMessage
-import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import com.sirolf2009.muse.InstanceActor.FocusMessage
 import com.sirolf2009.muse.sequencediagram.SequenceDiagramActor.ShowSequenceDiagram
+import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 
 @FinalFieldsConstructor class MessagesActor extends AbstractActor {
 

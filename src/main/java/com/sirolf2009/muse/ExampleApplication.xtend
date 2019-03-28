@@ -17,7 +17,9 @@ import org.eclipse.xtend.lib.annotations.Data
 class ExampleApplication {
 	
 	def static void main(String[] args) {
-		new Thread[Application.launch(MuseServer)].start() // Start the server. This could also be a standalone process, but your messages need to be on the classpath so it can deserialize
+		if(System.getenv("MUSE_LOCAL") !== null) {
+			new Thread[Application.launch(MuseServer)].start() // Start the server. This could also be a standalone process, but your messages need to be on the classpath so it can deserialize
+		} // If you didn't set it, it's expected that you're running a Muse Standalone
 		
 		val system = ActorSystem.create("MuseExampleApp")
 		

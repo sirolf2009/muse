@@ -2,11 +2,11 @@ package com.sirolf2009.muse.messagetable
 
 import akka.actor.AbstractActor
 import com.sirolf2009.muse.EventMessage
+import com.sirolf2009.muse.InstanceActor.FocusMessage
 import javafx.application.Platform
+import javafx.scene.control.SelectionMode
 import javafx.scene.control.TableView
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
-import com.sirolf2009.muse.MuseServer.FocusMessage
-import javafx.scene.control.SelectionMode
 
 @FinalFieldsConstructor class MessageTableActor extends AbstractActor {
 

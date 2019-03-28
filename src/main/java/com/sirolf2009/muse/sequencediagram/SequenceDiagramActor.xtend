@@ -11,7 +11,7 @@ import com.fxgraph.graph.SequenceDiagram.IActorCell
 import com.fxgraph.graph.SequenceDiagram.IMessageEdge
 import com.google.common.util.concurrent.AtomicDouble
 import com.sirolf2009.muse.EventMessage
-import com.sirolf2009.muse.MuseServer.ShowScreen
+import com.sirolf2009.muse.InstanceActor.ShowScreen
 import com.sirolf2009.muse.actorgraph.IGraphic
 import java.util.List
 import java.util.function.Supplier
