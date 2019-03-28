@@ -27,8 +27,9 @@
 .graph-cell .circle:hover {
 	-fx-fill: #74f77c ;
 }
-.graph-edge {
-	-fx-stroke: azure ;
+.message-edge .edge-text {
+	-fx-fill: azure;
+	-fx-text-fill: azure ;
 }
 
 /* Messages */

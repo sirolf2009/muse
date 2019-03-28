@@ -65,7 +65,9 @@ class ExampleApplication {
 		int count
 		
 		override getNode() {
-			return new TitledPane(requestID.toString(), new Label(String.valueOf(count)))
+			return new TitledPane(requestID.toString(), new Label(String.valueOf(count))) => [
+				setPrefWidth(100)
+			]
 		}
 	}
 	

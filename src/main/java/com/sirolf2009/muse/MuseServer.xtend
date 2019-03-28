@@ -8,8 +8,10 @@ import com.sirolf2009.muse.actorgraph.ActorGraph
 import com.sirolf2009.muse.actorgraph.ActorGraphActor
 import com.sirolf2009.muse.messagetable.Messages
 import com.sirolf2009.muse.messagetable.MessagesActor
+import com.sirolf2009.muse.sequencediagram.SequenceDiagramActor
 import com.typesafe.config.ConfigFactory
 import javafx.application.Application
+import javafx.application.Platform
 import javafx.scene.Node
 import javafx.scene.Scene
 import javafx.scene.control.SplitPane
@@ -18,8 +20,6 @@ import javafx.scene.control.TabPane
 import javafx.stage.Stage
 import org.eclipse.xtend.lib.annotations.Data
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
-import javafx.application.Platform
-import com.sirolf2009.muse.sequencediagram.SequenceDiagramActor
 
 class MuseServer extends Application {
 
