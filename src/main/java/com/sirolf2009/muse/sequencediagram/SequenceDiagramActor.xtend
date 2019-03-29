@@ -28,6 +28,7 @@ import javafx.scene.shape.Line
 import javafx.scene.text.Text
 import org.eclipse.xtend.lib.annotations.Data
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import java.io.Serializable
 
 @FinalFieldsConstructor class SequenceDiagramActor extends AbstractActor {
 
@@ -66,7 +67,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 		].build()
 	}
 
-	@Data static class ShowSequenceDiagram {
+	@Data static class ShowSequenceDiagram implements Serializable {
 		val List<EventMessage> messages
 	}
 

@@ -23,9 +23,9 @@ class MuseInbox implements MailboxType, ProducesMessageQueue<MuseInboxQueue> {
 
 	override MessageQueue create(Option<ActorRef> owner, Option<ActorSystem> system) {
 		if(system.isDefined()) {
-			system.get().eventStream().publish(new EventSpawn(new Date(), owner))
+			system.get().eventStream().publish(new EventSpawn(system.get(), new Date(), owner))
 			system.get().registerOnTermination[
-				system.get().eventStream().publish(new EventKill(new Date(), owner))
+				system.get().eventStream().publish(new EventKill(system.get(), new Date(), owner))
 			]
 			//FIXME for some reason the DeathWatcher creates a MuseInbox, resulting in a stack overflow
 //			system.get().actorOf(Props.create(DeathWatcher, owner.get()), "DeathWatcher")
@@ -43,7 +43,7 @@ class MuseInbox implements MailboxType, ProducesMessageQueue<MuseInboxQueue> {
 		
 		override createReceive() {
 			return receiveBuilder().match(Terminated) [
-				context().system().eventStream().publish(new EventKill(new Date(), Option.apply(actor)))
+				context().system().eventStream().publish(new EventKill(context().system(), new Date(), Option.apply(actor)))
 				context().stop(getSelf())
 			].build()
 		}

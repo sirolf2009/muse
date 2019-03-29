@@ -19,12 +19,12 @@ class ExampleApplication {
 	def static void main(String[] args) {
 		if(System.getenv("MUSE_LOCAL") !== null) {
 			new Thread[Application.launch(MuseServer)].start() // Start the server. This could also be a standalone process, but your messages need to be on the classpath so it can deserialize
+			Thread.sleep(2000)
 		} // If you didn't set it, it's expected that you're running a Muse Standalone
 		
 		val system = ActorSystem.create("MuseExampleApp")
 		
-		val serverActor = system.actorSelection("akka.tcp://muse-server-system@127.0.0.1:2552/user/ServerActor").resolveOne(Duration.ofSeconds(1)).toCompletableFuture().get()
-		system.eventStream().subscribe(serverActor, Event)
+		MuseConnect.connect(system)
 		
 		val printer = system.actorOf(Props.create(Printer), "Printer")
 		val counter = system.actorOf(Props.create(Counter), "Counter")

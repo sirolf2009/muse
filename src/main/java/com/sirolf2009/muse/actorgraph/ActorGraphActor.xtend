@@ -37,6 +37,7 @@ import javafx.scene.text.Font
 import javafx.util.Duration
 import org.eclipse.xtend.lib.annotations.Data
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import java.io.Serializable
 
 @FinalFieldsConstructor class ActorGraphActor extends AbstractActor {
 
@@ -124,12 +125,12 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 		].build()
 	}
 
-	@Data static class ShowMessage implements GraphOperation {
+	@Data @FinalFieldsConstructor static class ShowMessage implements GraphOperation, Serializable {
 
-		val Node message
-		val ICell senderCell
-		val ICell receiverCell
-		val AtomicReference<PathTransition> animation = new AtomicReference()
+		val transient Node message
+		val transient ICell senderCell
+		val transient ICell receiverCell
+		val transient AtomicReference<PathTransition> animation = new AtomicReference()
 
 		override apply(Graph graph) {
 			val path = getAnimationPath(graph, senderCell, receiverCell)

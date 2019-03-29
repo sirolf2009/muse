@@ -7,6 +7,7 @@ import akka.^dispatch.MessageQueue
 import java.util.Date
 import java.util.concurrent.ConcurrentLinkedQueue
 import scala.Option
+import com.sirolf2009.muse.EventMessage
 
 class MuseInboxQueue implements MessageQueue, MyMailboxSemantics {
 
@@ -21,7 +22,7 @@ class MuseInboxQueue implements MessageQueue, MyMailboxSemantics {
 	override enqueue(ActorRef receiver, Envelope handle) {
 		queue.offer(handle)
 		if(!(handle.message() instanceof com.sirolf2009.muse.Event) && !handle.message().getClass().toString().split(" ").get(1).startsWith("akka")) {
-			system.get().getEventStream().publish(new com.sirolf2009.muse.EventMessage(new Date(), handle, receiver, numberOfMessages()))
+			system.get().getEventStream().publish(new EventMessage(system.get(), new Date(), handle, receiver, numberOfMessages()))
 		}
 	}
 

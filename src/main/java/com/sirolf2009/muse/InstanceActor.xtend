@@ -11,6 +11,7 @@ import javafx.scene.Node
 import javafx.scene.control.Tab
 import org.eclipse.xtend.lib.annotations.Data
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import java.io.Serializable
 
 @FinalFieldsConstructor class InstanceActor extends AbstractActor {
 
@@ -38,10 +39,10 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 		].build()
 	}
 	
-	@Data static class FocusMessage {
+	@Data static class FocusMessage implements Serializable {
 		val EventMessage eventMessage
 	}
-	@Data static class ShowScreen {
+	@Data static class ShowScreen implements Serializable {
 		val String name
 		val Node node
 	}

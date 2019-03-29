@@ -69,7 +69,11 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 	}
 
 	@Data static class AddNode implements Serializable, GraphOperation {
-		ServerCell cell
+		transient ServerCell cell
+		
+		new(ServerCell cell) {
+			this.cell = cell
+		}
 
 		override apply(Graph graph) {
 			graph.getModel().addCell(cell)
@@ -86,7 +90,11 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 	}
 
 	@Data static class AddEdge implements Serializable, GraphOperation {
-		IEdge edge
+		transient IEdge edge
+		
+		new(IEdge edge) {
+			this.edge = edge
+		}
 
 		override apply(Graph graph) {
 			graph.getModel().addEdge(edge)
