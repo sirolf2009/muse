@@ -10,9 +10,10 @@ import com.fxgraph.graph.SequenceDiagram.ActorCell
 import com.fxgraph.graph.SequenceDiagram.IActorCell
 import com.fxgraph.graph.SequenceDiagram.IMessageEdge
 import com.google.common.util.concurrent.AtomicDouble
-import com.sirolf2009.muse.EventMessage
 import com.sirolf2009.muse.InstanceActor.ShowScreen
 import com.sirolf2009.muse.actorgraph.IGraphic
+import com.sirolf2009.muse.event.EventMessage
+import java.io.Serializable
 import java.util.List
 import java.util.function.Supplier
 import java.util.stream.Collectors
@@ -28,7 +29,6 @@ import javafx.scene.shape.Line
 import javafx.scene.text.Text
 import org.eclipse.xtend.lib.annotations.Data
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
-import java.io.Serializable
 
 @FinalFieldsConstructor class SequenceDiagramActor extends AbstractActor {
 

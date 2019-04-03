@@ -1,8 +1,8 @@
 package com.sirolf2009.muse.messagetable
 
 import akka.actor.ActorPath
-import com.sirolf2009.muse.EventMessage
 import com.sirolf2009.muse.actorgraph.IGraphic
+import com.sirolf2009.muse.event.EventMessage
 import java.util.Date
 import java.util.function.Function
 import javafx.beans.property.SimpleObjectProperty

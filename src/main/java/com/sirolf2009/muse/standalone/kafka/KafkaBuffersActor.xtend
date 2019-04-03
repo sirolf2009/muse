@@ -4,11 +4,11 @@ import akka.actor.AbstractActor
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.actor.Props
-import com.sirolf2009.muse.Event
 import com.sirolf2009.muse.MuseConnect.DisconnectApp
 import com.sirolf2009.muse.MuseConnect.NewAppConnection
 import com.sirolf2009.muse.MuseStandalone.Connections
 import com.sirolf2009.muse.MuseStandalone.GetConnections
+import com.sirolf2009.muse.event.Event
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.UUID

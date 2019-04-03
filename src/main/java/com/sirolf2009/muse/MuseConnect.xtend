@@ -1,6 +1,7 @@
 package com.sirolf2009.muse
 
 import akka.actor.ActorSystem
+import com.sirolf2009.muse.event.Event
 import java.io.Serializable
 import java.time.Duration
 import java.util.HashMap
@@ -32,11 +33,9 @@ class MuseConnect {
 				connectionMap.put(system, connectionID)
 				system.eventStream().subscribe(it, Event)
 				system.getWhenTerminated().thenAcceptAsync [ termination |
-					println("sending disconnect message")
 					tell(new DisconnectApp(connectionID), local)
 				]
 				Runtime.getRuntime().addShutdownHook(new Thread [
-					println("sending disconnect message")
 					tell(new DisconnectApp(connectionID), local)
 				])
 			].get()

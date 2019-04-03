@@ -6,9 +6,6 @@ import akka.actor.Props
 import akka.event.Logging
 import com.fxgraph.graph.Graph
 import com.fxgraph.graph.ICell
-import com.sirolf2009.muse.Event
-import com.sirolf2009.muse.EventMessage
-import com.sirolf2009.muse.EventSpawn
 import com.sirolf2009.muse.FXGraphActor
 import com.sirolf2009.muse.FXGraphActor.AddEdge
 import com.sirolf2009.muse.FXGraphActor.AddNode
@@ -17,6 +14,10 @@ import com.sirolf2009.muse.FXGraphActor.Lock
 import com.sirolf2009.muse.FXGraphActor.NavigateTo
 import com.sirolf2009.muse.FXGraphActor.Unlock
 import com.sirolf2009.muse.InstanceActor.FocusMessage
+import com.sirolf2009.muse.event.Event
+import com.sirolf2009.muse.event.EventMessage
+import com.sirolf2009.muse.event.EventSpawn
+import java.io.Serializable
 import java.util.HashMap
 import java.util.LinkedList
 import java.util.Map
@@ -37,7 +38,6 @@ import javafx.scene.text.Font
 import javafx.util.Duration
 import org.eclipse.xtend.lib.annotations.Data
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
-import java.io.Serializable
 
 @FinalFieldsConstructor class ActorGraphActor extends AbstractActor {
 

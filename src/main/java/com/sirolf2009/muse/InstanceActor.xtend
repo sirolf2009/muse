@@ -4,14 +4,16 @@ import akka.actor.AbstractActor
 import akka.actor.ActorRef
 import akka.actor.Props
 import com.sirolf2009.muse.actorgraph.ActorGraphActor
+import com.sirolf2009.muse.event.Event
+import com.sirolf2009.muse.event.EventMessage
 import com.sirolf2009.muse.messagetable.MessagesActor
 import com.sirolf2009.muse.sequencediagram.SequenceDiagramActor
+import java.io.Serializable
 import javafx.application.Platform
 import javafx.scene.Node
 import javafx.scene.control.Tab
 import org.eclipse.xtend.lib.annotations.Data
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
-import java.io.Serializable
 
 @FinalFieldsConstructor class InstanceActor extends AbstractActor {
 

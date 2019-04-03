@@ -1,6 +1,7 @@
-package com.sirolf2009.muse
+package com.sirolf2009.muse.event
 
 import akka.actor.ActorSystem
+import com.sirolf2009.muse.MuseConnect
 import java.io.Serializable
 import java.util.Date
 import java.util.UUID

@@ -9,8 +9,8 @@ import akka.^dispatch.MessageQueue
 import akka.^dispatch.ProducesMessageQueue
 import akka.^dispatch.RequiresMessageQueue
 import akka.^dispatch.UnboundedMailbox
-import com.sirolf2009.muse.EventSpawn
 import com.sirolf2009.muse.event.EventKill
+import com.sirolf2009.muse.event.EventSpawn
 import com.typesafe.config.Config
 import java.util.Date
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor

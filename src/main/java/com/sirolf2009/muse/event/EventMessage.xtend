@@ -1,4 +1,4 @@
-package com.sirolf2009.muse
+package com.sirolf2009.muse.event
 
 import akka.actor.ActorRef
 import akka.^dispatch.Envelope

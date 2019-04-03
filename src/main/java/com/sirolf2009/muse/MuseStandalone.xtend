@@ -5,7 +5,9 @@ import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.actor.Props
 import com.sirolf2009.muse.MuseConnect.NewAppConnection
+import com.sirolf2009.muse.event.Event
 import com.sirolf2009.muse.event.EventKill
+import com.sirolf2009.muse.event.EventSpawn
 import com.sirolf2009.muse.standalone.kafka.KafkaBuffersActor
 import com.typesafe.config.ConfigFactory
 import java.io.Serializable

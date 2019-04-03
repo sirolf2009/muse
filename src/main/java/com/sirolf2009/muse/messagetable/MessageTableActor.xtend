@@ -1,8 +1,8 @@
 package com.sirolf2009.muse.messagetable
 
 import akka.actor.AbstractActor
-import com.sirolf2009.muse.EventMessage
 import com.sirolf2009.muse.InstanceActor.FocusMessage
+import com.sirolf2009.muse.event.EventMessage
 import javafx.application.Platform
 import javafx.scene.control.SelectionMode
 import javafx.scene.control.TableView
