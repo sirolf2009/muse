@@ -1,14 +1,14 @@
 package com.sirolf2009.muse.client
 
 import akka.actor.ActorRef
-import com.sirolf2009.muse.MuseConnect.NewConnection
+import com.sirolf2009.muse.MuseConnect.NewAppConnection
 import java.util.Optional
-import javafx.scene.Node
-import org.eclipse.xtend.lib.annotations.Data
-import javafx.scene.image.ImageView
-import javafx.scene.image.Image
-import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.binding.Bindings
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.scene.Node
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
+import org.eclipse.xtend.lib.annotations.Data
 
 interface ConnectionTreeItem {
 
@@ -49,7 +49,7 @@ interface ConnectionTreeItem {
 	@Data static class Connection implements ConnectionTreeItem {
 
 		val connected = new SimpleBooleanProperty(false)
-		val NewConnection connection
+		val NewAppConnection connection
 
 		override getText() {
 			return Optional.of(connection.getActorSystem())
