@@ -5,10 +5,10 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.^dispatch.Envelope
 import akka.serialization.SerializationExtension
-import com.sirolf2009.muse.EventMessage
+import com.sirolf2009.muse.event.EventMessage
 import java.util.Date
-import org.junit.Test
 import org.junit.Assert
+import org.junit.Test
 
 class SerDeTest {
 	
