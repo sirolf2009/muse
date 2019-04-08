@@ -8,6 +8,5 @@ import org.eclipse.xtend.lib.annotations.Data
 	
 	val Envelope envelope
 	val ActorRef target
-	val int queueSize
 	
 }

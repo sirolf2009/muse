@@ -6,11 +6,15 @@ import akka.actor.ActorSystem
 import com.sirolf2009.muse.MuseStandalone.Connect
 import com.sirolf2009.muse.MuseStandalone.Disconnect
 import com.sirolf2009.muse.event.Event
+import com.sirolf2009.muse.event.EventKill
+import com.sirolf2009.muse.event.EventSpawn
+import java.util.ArrayList
 import java.util.HashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
 class KafkaBufferActor extends AbstractActor {
 
+	val spawns = new ArrayList<EventSpawn>()
 	val connections = new HashMap<ActorRef, ConsumerThread>()
 	val BufferProducer producer
 	val ActorSystem system
@@ -29,7 +33,13 @@ class KafkaBufferActor extends AbstractActor {
 	override createReceive() {
 		return receiveBuilder().match(Event) [
 			producer.send(it)
+			if(it instanceof EventSpawn) {
+				spawns.add(it)
+			} else if(it instanceof EventKill) {
+				spawns.remove(spawns.findFirst[spawn|spawn.actor.equals(actor)])
+			}
 		].match(Connect) [
+			spawns.forEach[cell| actor.tell(cell, getSelf())]
 			val consumer = new BufferConsumer(system, topicName, BufferConsumer.getDefaultProperties())
 			val consumerThread = new ConsumerThread(consumer, actor, getSelf())
 			connections.put(actor, consumerThread)

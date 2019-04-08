@@ -17,7 +17,7 @@ class SerDeTest {
 		val system = ActorSystem.create("serde-test")
 		val a = system.actorOf(Props.create(DummyActor), "a")
 		val b = system.actorOf(Props.create(DummyActor), "b")
-		val msg = new EventMessage(system, new Date(), Envelope.apply("Hello World", a), b, 1)
+		val msg = new EventMessage(system, new Date(), Envelope.apply("Hello World", a), b)
 		val data = BufferProducer.encode(SerializationExtension.get(system), msg)
 		val roundtrip = BufferConsumer.decode(SerializationExtension.get(system), data).get() as EventMessage
 		Assert.assertEquals(msg, roundtrip)

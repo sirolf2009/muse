@@ -7,6 +7,7 @@ import java.time.Duration
 import java.util.HashMap
 import java.util.UUID
 import org.eclipse.xtend.lib.annotations.Data
+import java.util.concurrent.TimeUnit
 
 class MuseConnect {
 
@@ -26,20 +27,22 @@ class MuseConnect {
 
 	def static connect(ActorSystem system, String remoteActorSystem, String host, int port, Duration duration) {
 		system.actorSelection("/").resolveOne(Duration.ofSeconds(1)).thenAccept [ local |
-			val selection = system.actorSelection('''akka.tcp://«remoteActorSystem»@«host»:«port»/user/*''')
-			selection.resolveOne(duration).toCompletableFuture().thenAccept [
+			try {
+				val selection = system.actorSelection('''akka.tcp://«remoteActorSystem»@«host»:«port»/user/ServerActor''').resolveOne(Duration.ofSeconds(10)).toCompletableFuture().get(10, TimeUnit.SECONDS)
 				val connectionID = UUID.randomUUID()
-				tell(new NewAppConnection(connectionID, system.name()), local)
+				selection.tell(new NewAppConnection(connectionID, system.name()), local)
 				connectionMap.put(system, connectionID)
-				system.eventStream().subscribe(it, Event)
+				system.eventStream().subscribe(selection, Event)
 				system.getWhenTerminated().thenAcceptAsync [ termination |
-					tell(new DisconnectApp(connectionID), local)
+					selection.tell(new DisconnectApp(connectionID), local)
 				]
 				Runtime.getRuntime().addShutdownHook(new Thread [
-					tell(new DisconnectApp(connectionID), local)
+					selection.tell(new DisconnectApp(connectionID), local)
 				])
-			].get()
-		]
+			} catch(Exception e) {
+				e.printStackTrace()
+			}
+		].toCompletableFuture().get()
 	}
 
 	def static getConnection(ActorSystem system) {
