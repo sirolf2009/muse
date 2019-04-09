@@ -1,8 +1,7 @@
 # Muse
 A way to visualize and debug the execution of an Akka ActorSystem 
 
-## Screenshot
-![screenshot](Screenshot.png)
+![screencast](screencast.gif)
 
 ## What is it?
 Muse is a tool to visualize the execution of an Akka ActorSystem, which means that you can graphically see your actors and the messages they exchange between one another. 
@@ -51,7 +50,7 @@ MuseConnect.connect(system); //Connects to localhost:2552
 ActorRef printer = system.actorOf(Props.create(Printer.class), "Printer");
 ActorRef counter = system.actorOf(Props.create(Counter.class), "Counter");
 ```
-The messages being sent around need to be serializable and also need to be present on the classpath of the server. Optionally, you can also implement a specific interface to alter how the messages are displayed on screen. Here's how the messages from the screenshot are configured.
+The messages being sent around need to be serializable and also need to be present on the classpath of the server. Optionally, you can also implement a specific interface to alter how the messages are displayed on screen. Here's how the messages from the screencast are configured.
 ```java
 class CountRequest implements Serializable, IGraphic {
 	UUID requestID;
