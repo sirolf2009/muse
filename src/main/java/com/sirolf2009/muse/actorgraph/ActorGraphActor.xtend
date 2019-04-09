@@ -34,7 +34,6 @@ import javafx.scene.shape.ArcTo
 import javafx.scene.shape.LineTo
 import javafx.scene.shape.MoveTo
 import javafx.scene.shape.Path
-import javafx.scene.text.Font
 import javafx.util.Duration
 import org.eclipse.xtend.lib.annotations.Data
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
@@ -79,7 +78,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 						val name = actor.path().getElements().get(it)
 						val path = actor.path().getElements().take(it + 1).join("/")
 						if(!cells.containsKey(path)) {
-							val cell = new ServerCell(name)
+							val cell = new ServerCell(name, actor)
 							cells.put(path, cell)
 							graphActor.tell(new AddNode(cell), getSelf())
 						}
@@ -104,16 +103,13 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 						messageObj.getNode()
 					else
 						new Label(getEnvelope().message().toString()) => [
-							setFont(new Font("Verdana", 8))
-							setStyle('''
-							-fx-background-color: aquamarine;
-							-fx-background-radius: 16.4, 15;
-							-fx-padding: 4;''')
+							getStyleClass().add("message")
 						]
 				graphActor.tell(new ShowMessage(message, senderCell, receiverCell), getSelf())
-			} else {
+			} else {				
 				log.error('''
 				Failed to find corresponding receiver/sender.
+				Message sender: «sender()»
 				Message: «it»
 				sender: «senderCell» «senderPath»
 				receiver: «receiverCell» «receiverPath»
@@ -125,7 +121,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 		].build()
 	}
 
-	@Data @FinalFieldsConstructor static class ShowMessage implements GraphOperation, Serializable {
+	@Data @FinalFieldsConstructor static class ShowMessage implements GraphOperation, Serializable, IGraphic {
 
 		val transient Node message
 		val transient ICell senderCell
@@ -202,6 +198,20 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 			path.getElements().add(new MoveTo(x, y))
 			path.getElements().add(new ArcTo(75, 75, 0, x - 1, y - 1, true, false))
 			return path
+		}
+		
+		override getNode() {
+			if(message !== null) {
+				return message
+			} else {
+				return new Label("ShowMessage") => [
+					getStyleClass().add("message")
+				]
+			}
+		}
+		
+		override toString() {
+			return '''ShowMessage [«senderCell» -«node»-> «receiverCell»'''
 		}
 
 	}

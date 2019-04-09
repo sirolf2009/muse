@@ -10,7 +10,8 @@ import javafx.stage.Stage
 class MuseServer extends Application {
 
 	override start(Stage primaryStage) throws Exception {
-		val system = ActorSystem.create("muse-server-system", ConfigFactory.load("server.conf"))
+		val configFile = getParameters().getNamed().getOrDefault("config", "server.conf")
+		val system = ActorSystem.create("muse-server-system", ConfigFactory.load(configFile))
 		val instance = new Instance()
 		system.actorOf(Props.create(InstanceActor, instance), "ServerActor")
 		

@@ -31,6 +31,13 @@
 	-fx-fill: azure;
 	-fx-text-fill: azure ;
 }
+.message {
+	-fx-font-family: "Verdana";
+	-fx-font-size: 8px;
+	-fx-background-color: aquamarine;
+	-fx-background-radius: 16.4, 15.0;
+	-fx-padding: 4.0;
+}
 
 /* Messages */
 .show-seq-diagram-btn {

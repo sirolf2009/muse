@@ -17,14 +17,15 @@ import org.eclipse.xtend.lib.annotations.Data
 class ExampleApplication {
 	
 	def static void main(String[] args) {
-		if(System.getenv("MUSE_LOCAL") !== null) {
-			new Thread[Application.launch(MuseServer)].start() // Start the server. This could also be a standalone process, but your messages need to be on the classpath so it can deserialize
-			Thread.sleep(2000)
-		} // If you didn't set it, it's expected that you're running a Muse Standalone
+//		if(System.getenv("MUSE_LOCAL") !== null) {
+//			new Thread[Application.launch(MuseServer)].start() // Start the server. This could also be a standalone process, but your messages need to be on the classpath so it can deserialize
+//			Thread.sleep(2000)
+//		} // If you didn't set it, it's expected that you're running a Muse Standalone
 		
 		val system = ActorSystem.create("MuseExampleApp")
 		
-		MuseConnect.connect(system)
+//		MuseConnect.connect(system)
+InternalInstanceActor.startInternalMuse(system)
 		
 		val printer = system.actorOf(Props.create(Printer), "Printer")
 		val counter = system.actorOf(Props.create(Counter), "Counter")

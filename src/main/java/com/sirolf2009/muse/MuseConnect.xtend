@@ -8,6 +8,7 @@ import java.util.HashMap
 import java.util.UUID
 import org.eclipse.xtend.lib.annotations.Data
 import java.util.concurrent.TimeUnit
+import akka.actor.ActorRef
 
 class MuseConnect {
 
@@ -26,18 +27,21 @@ class MuseConnect {
 	}
 
 	def static connect(ActorSystem system, String remoteActorSystem, String host, int port, Duration duration) {
+		connect(system, system.actorSelection('''akka.tcp://«remoteActorSystem»@«host»:«port»/user/ServerActor''').resolveOne(duration).toCompletableFuture().get(duration.toMillis(), TimeUnit.MILLISECONDS))
+	}
+
+	def static connect(ActorSystem system, ActorRef remoteActor) {
 		system.actorSelection("/").resolveOne(Duration.ofSeconds(1)).thenAccept [ local |
 			try {
-				val selection = system.actorSelection('''akka.tcp://«remoteActorSystem»@«host»:«port»/user/ServerActor''').resolveOne(Duration.ofSeconds(10)).toCompletableFuture().get(10, TimeUnit.SECONDS)
 				val connectionID = UUID.randomUUID()
-				selection.tell(new NewAppConnection(connectionID, system.name()), local)
+				remoteActor.tell(new NewAppConnection(connectionID, system.name()), local)
 				connectionMap.put(system, connectionID)
-				system.eventStream().subscribe(selection, Event)
+				system.eventStream().subscribe(remoteActor, Event)
 				system.getWhenTerminated().thenAcceptAsync [ termination |
-					selection.tell(new DisconnectApp(connectionID), local)
+					remoteActor.tell(new DisconnectApp(connectionID), local)
 				]
 				Runtime.getRuntime().addShutdownHook(new Thread [
-					selection.tell(new DisconnectApp(connectionID), local)
+					remoteActor.tell(new DisconnectApp(connectionID), local)
 				])
 			} catch(Exception e) {
 				e.printStackTrace()

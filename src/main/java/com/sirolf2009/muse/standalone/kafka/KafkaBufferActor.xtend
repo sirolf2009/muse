@@ -11,6 +11,7 @@ import com.sirolf2009.muse.event.EventSpawn
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.concurrent.atomic.AtomicBoolean
+import akka.actor.Terminated
 
 class KafkaBufferActor extends AbstractActor {
 
@@ -44,9 +45,13 @@ class KafkaBufferActor extends AbstractActor {
 			val consumerThread = new ConsumerThread(consumer, actor, getSelf())
 			connections.put(actor, consumerThread)
 			consumerThread.start()
+			context().watch(actor)
 		].match(Disconnect) [
 			connections.get(actor).stopConsumer()
 			connections.remove(actor)
+		].match(Terminated) [
+			connections.get(actor()).stopConsumer()
+			connections.remove(actor())
 		].build()
 	}
 

@@ -1,5 +1,6 @@
 package com.sirolf2009.muse.actorgraph
 
+import akka.actor.ActorRef
 import com.fxgraph.cells.AbstractCell
 import com.fxgraph.graph.Graph
 import javafx.beans.property.DoubleProperty
@@ -14,7 +15,8 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 
 @FinalFieldsConstructor @Accessors class ServerCell extends AbstractCell {
 
-	val String path
+	val String name
+	val ActorRef path
 	@Deprecated
 	val DoubleProperty loadProperty = new SimpleDoubleProperty()
 
@@ -23,7 +25,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 		pane.getStyleClass().add("graph-cell")
 		pane.setPrefSize(50, 50)
 
-		new Label(path) => [
+		new Label(name) => [
 			getStyleClass().add("white-text")
 			BorderPane.setMargin(it, new Insets(10))
 			BorderPane.setAlignment(it, Pos.CENTER)
