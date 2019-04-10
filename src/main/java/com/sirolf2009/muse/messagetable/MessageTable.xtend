@@ -18,6 +18,7 @@ class MessageTable extends TableView<EventMessage> {
 		getStyleClass().add("message-table")
 		val dateColumn = new TableColumn<EventMessage, Date>("Date") => [
 			setCellValueFactory [return new SimpleObjectProperty(getValue().getDate())]
+			setPrefWidth(210)
 		]
 		val fromColumn = new TableColumn<EventMessage, EventMessage>("From") => [
 			setCellValueFactory [return new SimpleObjectProperty(getValue())]

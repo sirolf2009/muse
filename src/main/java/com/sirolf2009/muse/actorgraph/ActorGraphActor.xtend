@@ -78,7 +78,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 						val name = actor.path().getElements().get(it)
 						val path = actor.path().getElements().take(it + 1).join("/")
 						if(!cells.containsKey(path)) {
-							val cell = new ServerCell(name)
+							val cell = new ServerCell(name, context().actorSelection(actor.path().address()+"/"+path).resolveOne(java.time.Duration.ofSeconds(1)).toCompletableFuture().get())
 							cells.put(path, cell)
 							graphActor.tell(new AddNode(cell), getSelf())
 						}

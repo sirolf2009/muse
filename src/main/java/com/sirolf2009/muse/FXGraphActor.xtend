@@ -2,8 +2,8 @@ package com.sirolf2009.muse
 
 import akka.actor.AbstractActor
 import com.fxgraph.graph.Graph
+import com.fxgraph.graph.ICell
 import com.fxgraph.graph.IEdge
-import com.sirolf2009.muse.actorgraph.ServerCell
 import java.io.Serializable
 import javafx.application.Platform
 import javafx.beans.property.BooleanProperty
@@ -69,9 +69,9 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 	}
 
 	@Data static class AddNode implements Serializable, GraphOperation {
-		transient ServerCell cell
+		transient ICell cell
 		
-		new(ServerCell cell) {
+		new(ICell cell) {
 			this.cell = cell
 		}
 

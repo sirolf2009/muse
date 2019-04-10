@@ -4,6 +4,7 @@ import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.testkit.TestKit
+import com.fxgraph.cells.RectangleCell
 import com.fxgraph.edges.Edge
 import com.fxgraph.graph.Graph
 import com.fxgraph.layout.AbegoTreeLayout
@@ -15,7 +16,6 @@ import com.sirolf2009.muse.FXGraphActor.GraphOperation
 import com.sirolf2009.muse.FXGraphActor.Lock
 import com.sirolf2009.muse.FXGraphActor.NavigateTo
 import com.sirolf2009.muse.FXGraphActor.Unlock
-import com.sirolf2009.muse.actorgraph.ServerCell
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.FXCollections
@@ -43,14 +43,14 @@ class FXGraphActorTest extends ApplicationTest {
 		val graphActor = getGraphActor(system)
 		Thread.sleep(1000)
 
-		val cellA = new ServerCell("A")
+		val cellA = new RectangleCell()
 		graphActor.tell(new AddNode(cellA), ActorRef.noSender())
 		Thread.sleep(1000)
 		Assert.assertTrue(graph.getModel().getAllCells().contains(cellA))
 
 		graphActor.tell(new Lock(), ActorRef.noSender())
 
-		val cellB = new ServerCell("B")
+		val cellB = new RectangleCell()
 		graphActor.tell(new AddNode(cellB), ActorRef.noSender())
 		Thread.sleep(1000)
 		Assert.assertFalse(graph.getModel().getAllCells().contains(cellB))
@@ -71,14 +71,14 @@ class FXGraphActorTest extends ApplicationTest {
 		val probe = new TestKit(system)
 		Thread.sleep(1000)
 		
-		val cellA = new ServerCell("A")
+		val cellA = new RectangleCell()
 		graphActor.tell(new AddNode(cellA), ActorRef.noSender())
 		Thread.sleep(1000)
 		graphActor.tell(new CursorRequest(), probe.testActor())
 		Assert.assertEquals(0, probe.expectMsgClass(CursorResponse).getCursor())
 		Assert.assertTrue(graph.getModel().getAllCells().contains(cellA))
 		
-		val cellB = new ServerCell("B")
+		val cellB = new RectangleCell()
 		graphActor.tell(new AddNode(cellB), ActorRef.noSender())
 		Thread.sleep(1000)
 		Assert.assertTrue(graph.getModel().getAllCells().contains(cellB))
@@ -101,12 +101,12 @@ class FXGraphActorTest extends ApplicationTest {
 		val graphActor = getGraphActor(system)
 		Thread.sleep(1000)
 		
-		val cellA = new ServerCell("A")
+		val cellA = new RectangleCell()
 		graphActor.tell(new AddNode(cellA), ActorRef.noSender())
 		Thread.sleep(1000)
 		Assert.assertTrue(graph.getModel().getAllCells().contains(cellA))
 		
-		val cellB = new ServerCell("B")
+		val cellB = new RectangleCell()
 		graphActor.tell(new AddNode(cellB), ActorRef.noSender())
 		Thread.sleep(1000)
 		Assert.assertTrue(graph.getModel().getAllCells().contains(cellB))

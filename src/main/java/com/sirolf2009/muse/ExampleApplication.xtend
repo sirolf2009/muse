@@ -5,13 +5,23 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.event.Logging
 import com.sirolf2009.muse.actorgraph.IGraphic
+import com.sirolf2009.muse.actorgraph.InspectionRequest
+import com.sirolf2009.muse.actorgraph.InspectionResponse
 import com.typesafe.config.ConfigFactory
 import java.io.Serializable
 import java.time.Duration
 import java.util.Random
 import java.util.UUID
+import java.util.function.Supplier
+import javafx.scene.Node
+import javafx.scene.control.Button
 import javafx.scene.control.Label
+import javafx.scene.control.TextField
+import javafx.scene.control.TextFormatter
 import javafx.scene.control.TitledPane
+import javafx.scene.layout.HBox
+import javafx.scene.layout.VBox
+import javafx.util.converter.NumberStringConverter
 import org.eclipse.xtend.lib.annotations.Data
 
 class ExampleApplication {
@@ -20,7 +30,7 @@ class ExampleApplication {
 		val system = ActorSystem.create("MuseExampleApp", ConfigFactory.load("example-application.conf"))
 
 		if(System.getenv("MUSE_LOCAL") !== null) {// Start an internal muse
-			MuseInternal.startInternalMuse(system)
+			MuseInternal.startInternalMuseApplication(system)
 		} else { //Or connect to a muse server
 			MuseConnect.connect(system)
 		}
@@ -46,12 +56,46 @@ class ExampleApplication {
 		override createReceive() {
 			return receiveBuilder().match(Integer) [
 				count += it
+			].match(SetCount) [
+				this.count = it.count
 			].match(CountRequest) [
 				getSender().tell(new CountResponse(requestID, count), getSelf())
+			].match(InspectionRequest) [
+				val supplier = [
+					val setValueField = new TextField() => [
+						setMinWidth(50)
+						setTextFormatter(new TextFormatter(new NumberStringConverter()))
+					]
+					val setValueButton = new Button("Set") => [
+						setMinWidth(50)
+						setOnAction [
+							getSelf().tell(new SetCount(Integer.parseInt(setValueField.getText())), getSelf())
+						]
+					]
+					val reset = new Button("Reset") => [
+						setOnAction [
+							getSelf().tell(new SetCount(0), getSelf())
+						]
+					]
+					new TitledPane('''Count «count»''', new VBox(new HBox(setValueField, setValueButton), reset))
+				] as Supplier<Node>
+				getSender().tell(new InspectionResponse(supplier), getSelf())
 			].build()
 		}
 
 	}
+	
+	@Data static class SetCount implements Serializable, IGraphic {
+		
+		int count
+		
+		override getNode() {
+			return new Label('''Set count to «count»''') => [
+				getStyleClass().add("message")
+			]
+		}
+		
+	} 
 
 	@Data static class CountRequest implements Serializable, IGraphic {
 		UUID requestID

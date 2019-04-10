@@ -23,6 +23,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 		table = new Messages()
 
 		getItems().addAll(mainView, table)
+		setDividerPositions(0.6)
 	}
 	
 }
