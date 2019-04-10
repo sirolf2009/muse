@@ -11,10 +11,14 @@ import com.sirolf2009.muse.FXGraphActor.AddEdge
 import com.sirolf2009.muse.FXGraphActor.AddNode
 import com.sirolf2009.muse.FXGraphActor.CursorRequest
 import com.sirolf2009.muse.FXGraphActor.CursorResponse
+import com.sirolf2009.muse.FXGraphActor.GraphOperation
 import com.sirolf2009.muse.FXGraphActor.Lock
 import com.sirolf2009.muse.FXGraphActor.NavigateTo
 import com.sirolf2009.muse.FXGraphActor.Unlock
 import com.sirolf2009.muse.actorgraph.ServerCell
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleIntegerProperty
+import javafx.collections.FXCollections
 import javafx.scene.Scene
 import javafx.scene.layout.StackPane
 import javafx.stage.Stage
@@ -36,25 +40,25 @@ class FXGraphActorTest extends ApplicationTest {
 	@Test
 	def void testLocking() {
 		val system = ActorSystem.create()
-		val graphActor = system.actorOf(Props.create(FXGraphActor, graph), "graph")
+		val graphActor = getGraphActor(system)
 		Thread.sleep(1000)
-		
+
 		val cellA = new ServerCell("A")
 		graphActor.tell(new AddNode(cellA), ActorRef.noSender())
 		Thread.sleep(1000)
-		Assert.assertTrue(graph.getModel().getAddedCells().contains(cellA))
-		
+		Assert.assertTrue(graph.getModel().getAllCells().contains(cellA))
+
 		graphActor.tell(new Lock(), ActorRef.noSender())
-		
+
 		val cellB = new ServerCell("B")
 		graphActor.tell(new AddNode(cellB), ActorRef.noSender())
 		Thread.sleep(1000)
-		Assert.assertFalse(graph.getModel().getAddedCells().contains(cellB))
+		Assert.assertFalse(graph.getModel().getAllCells().contains(cellB))
 
 		val probe = new TestKit(system)
 		graphActor.tell(new CursorRequest(), probe.testActor())
 		Assert.assertEquals(0, probe.expectMsgClass(CursorResponse).getCursor())
-		
+
 		graphActor.tell(new Unlock(), ActorRef.noSender())
 		Thread.sleep(1000)
 		Assert.assertTrue(graph.getModel().getAllCells().contains(cellB))
@@ -63,26 +67,30 @@ class FXGraphActorTest extends ApplicationTest {
 	@Test
 	def void testCheckHistory() {
 		val system = ActorSystem.create()
-		val graphActor = system.actorOf(Props.create(FXGraphActor, graph), "graph")
+		val graphActor = getGraphActor(system)
+		val probe = new TestKit(system)
 		Thread.sleep(1000)
+		
 		val cellA = new ServerCell("A")
 		graphActor.tell(new AddNode(cellA), ActorRef.noSender())
 		Thread.sleep(1000)
-		Assert.assertTrue(graph.getModel().getAddedCells().contains(cellA))
+		graphActor.tell(new CursorRequest(), probe.testActor())
+		Assert.assertEquals(0, probe.expectMsgClass(CursorResponse).getCursor())
+		Assert.assertTrue(graph.getModel().getAllCells().contains(cellA))
+		
 		val cellB = new ServerCell("B")
 		graphActor.tell(new AddNode(cellB), ActorRef.noSender())
 		Thread.sleep(1000)
-		Assert.assertTrue(graph.getModel().getAddedCells().contains(cellB))
+		Assert.assertTrue(graph.getModel().getAllCells().contains(cellB))
 
-		val probe = new TestKit(system)
-		graphActor.tell(new CursorRequest(), probe.testActor())
-		Assert.assertEquals(2, probe.expectMsgClass(CursorResponse).getCursor())
-		
-		graphActor.tell(new NavigateTo(1), probe.testActor())
-		Thread.sleep(1000)
 		graphActor.tell(new CursorRequest(), probe.testActor())
 		Assert.assertEquals(1, probe.expectMsgClass(CursorResponse).getCursor())
-		
+
+		graphActor.tell(new NavigateTo(0), probe.testActor())
+		Thread.sleep(1000)
+		graphActor.tell(new CursorRequest(), probe.testActor())
+		Assert.assertEquals(0, probe.expectMsgClass(CursorResponse).getCursor())
+
 		Assert.assertTrue(graph.getModel().getAllCells().contains(cellA))
 		Assert.assertFalse(graph.getModel().getAllCells().contains(cellB))
 	}
@@ -90,21 +98,31 @@ class FXGraphActorTest extends ApplicationTest {
 	@Test
 	def void testAddNodesAndEdges() {
 		val system = ActorSystem.create()
-		val graphActor = system.actorOf(Props.create(FXGraphActor, graph), "graph")
+		val graphActor = getGraphActor(system)
 		Thread.sleep(1000)
+		
 		val cellA = new ServerCell("A")
 		graphActor.tell(new AddNode(cellA), ActorRef.noSender())
 		Thread.sleep(1000)
-		Assert.assertTrue(graph.getModel().getAddedCells().contains(cellA))
+		Assert.assertTrue(graph.getModel().getAllCells().contains(cellA))
+		
 		val cellB = new ServerCell("B")
 		graphActor.tell(new AddNode(cellB), ActorRef.noSender())
 		Thread.sleep(1000)
-		Assert.assertTrue(graph.getModel().getAddedCells().contains(cellB))
+		Assert.assertTrue(graph.getModel().getAllCells().contains(cellB))
+		
 		val edge = new Edge(cellA, cellB)
 		graphActor.tell(new AddEdge(edge), ActorRef.noSender())
 		graph.layout(new AbegoTreeLayout(200, 200, Location.Bottom))
 		Thread.sleep(1000)
-		Assert.assertTrue(graph.getModel().getAddedEdges().contains(edge))
+		Assert.assertTrue(graph.getModel().getAllEdges().contains(edge))
+	}
+	
+	def getGraphActor(ActorSystem system) {
+		val locked = new SimpleBooleanProperty()
+		val cursor = new SimpleIntegerProperty()
+		val actions = FXCollections.<GraphOperation>observableArrayList()
+		return system.actorOf(Props.create(FXGraphActor, graph, locked, cursor, actions), "graph")
 	}
 
 }

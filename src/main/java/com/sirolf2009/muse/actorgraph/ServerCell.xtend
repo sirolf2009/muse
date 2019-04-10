@@ -1,10 +1,7 @@
 package com.sirolf2009.muse.actorgraph
 
-import akka.actor.ActorRef
 import com.fxgraph.cells.AbstractCell
 import com.fxgraph.graph.Graph
-import javafx.beans.property.DoubleProperty
-import javafx.beans.property.SimpleDoubleProperty
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.Label
@@ -16,9 +13,6 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 @FinalFieldsConstructor @Accessors class ServerCell extends AbstractCell {
 
 	val String name
-	val ActorRef path
-	@Deprecated
-	val DoubleProperty loadProperty = new SimpleDoubleProperty()
 
 	override getGraphic(Graph graph) {
 		val pane = new BorderPane()
@@ -41,8 +35,4 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 		return pane
 	}	
 	
-	override toString() {
-		return '''ServerCell [«path»]'''
-	}
-
 }

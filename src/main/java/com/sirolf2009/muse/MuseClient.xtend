@@ -12,7 +12,7 @@ class MuseClient extends Application {
 	override start(Stage primaryStage) throws Exception {
 		val system = ActorSystem.create("muse-client-system", ConfigFactory.load("client.conf"))
 		
-//		InternalInstanceActor.startInternalMuse(system)
+//		InternalMuse.startInternalMuse(system)
 		
 		val main = new ClientScreen(system)
 		

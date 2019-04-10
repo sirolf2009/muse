@@ -20,8 +20,9 @@ import org.eclipse.xtend.lib.annotations.Data
 class MuseStandalone {
 
 	def static void main(String[] args) {
-		val system = ActorSystem.create("muse-server-system", ConfigFactory.load("server.conf"))
-		system.actorOf(Props.create(KafkaBuffersActor, system, "muse-test-topic"), "ServerActor")
+		val config = ConfigFactory.load("server.conf")
+		val system = ActorSystem.create("muse-server-system", config)
+		system.actorOf(Props.create(KafkaBuffersActor, system, config.getString("muse.kafka-topic")), "ServerActor")
 	}
 
 	static class BuffersActor extends AbstractActor {
