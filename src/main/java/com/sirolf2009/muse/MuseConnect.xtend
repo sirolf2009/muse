@@ -9,6 +9,8 @@ import java.util.UUID
 import org.eclipse.xtend.lib.annotations.Data
 import java.util.concurrent.TimeUnit
 import akka.actor.ActorRef
+import akka.event.Logging.LogEvent
+import akka.actor.Props
 
 class MuseConnect {
 
@@ -37,6 +39,9 @@ class MuseConnect {
 				remoteActor.tell(new NewAppConnection(connectionID, system.name()), local)
 				connectionMap.put(system, connectionID)
 				system.eventStream().subscribe(remoteActor, Event)
+				val loggingActor = system.actorOf(Props.create(MuseLoggingAdapter), "muse-logging")
+				system.eventStream().subscribe(loggingActor, LogEvent)
+				
 				system.getWhenTerminated().thenAcceptAsync [ termination |
 					remoteActor.tell(new DisconnectApp(connectionID), local)
 				]

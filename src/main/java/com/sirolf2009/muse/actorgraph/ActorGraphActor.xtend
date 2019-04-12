@@ -15,6 +15,7 @@ import com.sirolf2009.muse.FXGraphActor.NavigateTo
 import com.sirolf2009.muse.FXGraphActor.Unlock
 import com.sirolf2009.muse.InstanceActor.FocusMessage
 import com.sirolf2009.muse.event.Event
+import com.sirolf2009.muse.event.EventLog
 import com.sirolf2009.muse.event.EventMessage
 import com.sirolf2009.muse.event.EventSpawn
 import java.io.Serializable
@@ -122,6 +123,13 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 		].match(FocusMessage) [
 			graph.getLock().setSelected(true)
 			graphActor.tell(new NavigateTo(messages.indexOf(getEventMessage())), getSelf())
+		].match(EventLog) [
+			try {
+				cells.get(getActor().path().getElements().join("/")).getLogging().add(it)
+			} catch(Exception e) {
+				println(it)
+				e.printStackTrace()
+			}
 		].build()
 	}
 
