@@ -71,26 +71,35 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 
 	override createReceive() {
 		return receiveBuilder().match(EventSpawn) [
-			messages.add(it)
-			if(getActor().isDefined()) {
-				Platform.runLater [
-					val actor = getActor().get()
-					(0 ..< actor.path().elements().size()).forEach [
-						val name = actor.path().getElements().get(it)
-						val path = actor.path().getElements().take(it + 1).join("/")
-						if(!cells.containsKey(path)) {
-							val cell = new ServerCell(name, context().actorSelection(actor.path().address() + "/" + path).resolveOne(java.time.Duration.ofSeconds(1)).toCompletableFuture().get())
-							cells.put(path, cell)
-							graphActor.tell(new AddNode(cell), getSelf())
-						}
-						if(it > 0) {
-							val parent = actor.path().getElements().take(it).join("/")
-							if(cells.containsKey(parent)) {
-								graphActor.tell(new AddEdge(new ServerEdge(cells.get(parent), cells.get(path))), getSelf())
+			try {
+				messages.add(it)
+				if(getActor().isDefined()) {
+					Platform.runLater [
+						val actor = getActor().get()
+						(0 ..< actor.path().elements().size()).forEach [index|
+							try {
+								val name = actor.path().getElements().get(index)
+								val path = actor.path().getElements().take(index + 1).join("/")
+								if(!cells.containsKey(path)) {
+									log.info('''Spawning cell «path»''')
+									val cell = new ServerCell(name, context().actorSelection(actor.path().address() + "/" + path).resolveOne(java.time.Duration.ofSeconds(1)).toCompletableFuture().get())
+									cells.put(path, cell)
+									graphActor.tell(new AddNode(cell), getSelf())
+								}
+								if(index > 0) {
+									val parent = actor.path().getElements().take(index).join("/")
+									if(cells.containsKey(parent)) {
+										graphActor.tell(new AddEdge(new ServerEdge(cells.get(parent), cells.get(path))), getSelf())
+									}
+								}
+							} catch(Exception e) {
+								throw new RuntimeException('''Failed to spawn cell at index «index» while processing «it»''', e)
 							}
-						}
+						]
 					]
-				]
+				}
+			} catch(Exception e) {
+				throw new RuntimeException('''Failed to process «it»''', e)
 			}
 		].match(EventMessage) [
 			messages.add(it)
