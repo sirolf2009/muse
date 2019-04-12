@@ -78,7 +78,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 						val name = actor.path().getElements().get(it)
 						val path = actor.path().getElements().take(it + 1).join("/")
 						if(!cells.containsKey(path)) {
-							val cell = new ServerCell(name, context().actorSelection(actor.path().address()+"/"+path).resolveOne(java.time.Duration.ofSeconds(1)).toCompletableFuture().get())
+							val cell = new ServerCell(name, context().actorSelection(actor.path().address() + "/" + path).resolveOne(java.time.Duration.ofSeconds(1)).toCompletableFuture().get())
 							cells.put(path, cell)
 							graphActor.tell(new AddNode(cell), getSelf())
 						}
@@ -93,27 +93,31 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 			}
 		].match(EventMessage) [
 			messages.add(it)
-			val senderPath = getEnvelope().sender().path().getElements().join("/")
-			val senderCell = cells.get(senderPath)
-			val receiverPath = getTarget().path().getElements().join("/")
-			val receiverCell = cells.get(receiverPath)
-			if(senderCell !== null && receiverCell !== null) {
-				val messageObj = getEnvelope().message()
-				val message = if(messageObj instanceof IGraphic)
-						messageObj.getNode()
-					else
-						new Label(getEnvelope().message().toString()) => [
-							getStyleClass().add("message")
-						]
-				graphActor.tell(new ShowMessage(message, senderCell, receiverCell), getSelf())
-			} else {				
-				log.error('''
-				Failed to find corresponding receiver/sender.
-				Message sender: «sender()»
-				Message: «it»
-				sender: «senderCell» «senderPath»
-				receiver: «receiverCell» «receiverPath»
-				cells: «cells»''')
+			val environment = getEnvelope().sender().path().getElements().get(0)
+			val environmentReceiver = getTarget().path().getElements().get(0)
+			if(environment.equals("user") && environmentReceiver.equals("user")) {
+				val senderPath = getEnvelope().sender().path().getElements().join("/")
+				val senderCell = cells.get(senderPath)
+				val receiverPath = getTarget().path().getElements().join("/")
+				val receiverCell = cells.get(receiverPath)
+				if(senderCell !== null && receiverCell !== null) {
+					val messageObj = getEnvelope().message()
+					val message = if(messageObj instanceof IGraphic)
+							messageObj.getNode()
+						else
+							new Label(getEnvelope().message().toString()) => [
+								getStyleClass().add("message")
+							]
+					graphActor.tell(new ShowMessage(message, senderCell, receiverCell), getSelf())
+				} else {
+					log.error('''
+					Failed to find corresponding receiver/sender.
+					Message sender: «sender()»
+					Message: «it»
+					sender: «senderCell» «senderPath»
+					receiver: «receiverCell» «receiverPath»
+					cells: «cells»''')
+				}
 			}
 		].match(FocusMessage) [
 			graph.getLock().setSelected(true)
@@ -199,7 +203,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 			path.getElements().add(new ArcTo(75, 75, 0, x - 1, y - 1, true, false))
 			return path
 		}
-		
+
 		override getNode() {
 			if(message !== null) {
 				return message
@@ -209,7 +213,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 				]
 			}
 		}
-		
+
 		override toString() {
 			return '''ShowMessage [«senderCell» -«node»-> «receiverCell»'''
 		}
