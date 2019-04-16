@@ -27,6 +27,10 @@ import org.eclipse.xtend.lib.annotations.Data
 class ExampleApplication {
 
 	def static void main(String[] args) {
+		setup()
+	}
+	
+	def static setup() {
 		val system = ActorSystem.create("MuseExampleApp", ConfigFactory.load("example-application.conf"))
 
 		if(System.getenv("MUSE_LOCAL") !== null) {// Start an internal muse
@@ -47,6 +51,7 @@ class ExampleApplication {
 				counter.tell(new CountRequest(UUID.randomUUID()), printer)
 			}
 		].start()
+		return system
 	}
 
 	static class Counter extends AbstractActor {

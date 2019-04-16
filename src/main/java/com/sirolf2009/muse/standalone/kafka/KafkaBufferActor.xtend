@@ -3,6 +3,8 @@ package com.sirolf2009.muse.standalone.kafka
 import akka.actor.AbstractActor
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
+import akka.actor.Terminated
+import akka.event.Logging
 import com.sirolf2009.muse.MuseStandalone.Connect
 import com.sirolf2009.muse.MuseStandalone.Disconnect
 import com.sirolf2009.muse.event.Event
@@ -11,17 +13,21 @@ import com.sirolf2009.muse.event.EventSpawn
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.concurrent.atomic.AtomicBoolean
-import akka.actor.Terminated
+import com.sirolf2009.muse.MuseConnect.DisconnectApp
+import com.sirolf2009.muse.MuseConnect.NewAppConnection
 
 class KafkaBufferActor extends AbstractActor {
 
+	val log = Logging.getLogger(getContext().getSystem(), this)
 	val spawns = new ArrayList<EventSpawn>()
 	val connections = new HashMap<ActorRef, ConsumerThread>()
+	val NewAppConnection newAppConnection
 	val BufferProducer producer
 	val ActorSystem system
 	val String topicName
 
-	new(ActorSystem system, String topicName) {
+	new(NewAppConnection newAppConnection, ActorSystem system, String topicName) {
+		this.newAppConnection = newAppConnection
 		producer = new BufferProducer(system, topicName, BufferProducer.getDefaultProperties())
 		this.system = system
 		this.topicName = topicName
@@ -29,6 +35,7 @@ class KafkaBufferActor extends AbstractActor {
 
 	override postStop() throws Exception {
 		connections.values().forEach[stopConsumer()]
+		connections.keySet().forEach[tell(new DisconnectApp(newAppConnection.getID()), getSelf())]
 	}
 
 	override createReceive() {
@@ -40,7 +47,8 @@ class KafkaBufferActor extends AbstractActor {
 				spawns.remove(spawns.findFirst[spawn|spawn.actor.equals(actor)])
 			}
 		].match(Connect) [
-			spawns.forEach[cell| actor.tell(cell, getSelf())]
+			log.info('''Accepting new connection from «getActor()»''')
+			spawns.forEach[cell|actor.tell(cell, getSelf())]
 			val consumer = new BufferConsumer(system, topicName, BufferConsumer.getDefaultProperties())
 			val consumerThread = new ConsumerThread(consumer, actor, getSelf())
 			connections.put(actor, consumerThread)

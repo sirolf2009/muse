@@ -14,6 +14,8 @@ import javafx.scene.Node
 import javafx.scene.control.Tab
 import org.eclipse.xtend.lib.annotations.Data
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import com.sirolf2009.muse.MuseConnect.DisconnectApp
+import javafx.scene.control.Label
 
 @FinalFieldsConstructor class InstanceActor extends AbstractActor {
 
@@ -38,12 +40,19 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 				instance.getMainView().getTabs().add(tab)
 				instance.getMainView().getSelectionModel().select(tab)
 			]
+		].match(DisconnectApp) [
+			Platform.runLater [
+				instance.getChildren().add(new Label("Connection lost!") => [
+					getStyleClass().add("red-text")
+				])
+			]
 		].build()
 	}
-	
+
 	@Data static class FocusMessage implements Serializable {
 		val EventMessage eventMessage
 	}
+
 	@Data static class ShowScreen implements Serializable {
 		val String name
 		val Node node

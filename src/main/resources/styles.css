@@ -20,6 +20,11 @@
 	-fx-text-fill: azure;
 }
 
+.red-text {
+	-fx-fill: #ff6961;
+	-fx-text-fill: #ff6961;
+}
+
 /* ActorGraph */
 .graph-cell .circle {
 	-fx-fill: #88d88d ;

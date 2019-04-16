@@ -1,7 +1,5 @@
 package com.sirolf2009.muse.client
 
-import akka.actor.ActorSystem
-import java.time.Duration
 import javafx.scene.control.Button
 import javafx.scene.control.TabPane
 import javafx.scene.control.TextField
@@ -9,25 +7,29 @@ import javafx.scene.layout.BorderPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
+import org.eclipse.xtend.lib.annotations.Accessors
 
-class ClientScreen extends BorderPane {
+@Accessors class ClientScreen extends BorderPane {
+	
+	val TabPane connections
+	val TextField connectionURL
+	val ConnectionTree connectionTree
+	val Button connect
 
-	new(ActorSystem actorSystem) {
-		val connections = new TabPane()		
+	new() {
+		connections = new TabPane()		
 		setCenter(connections)
 		
-		val connectionURL = new TextField("akka.tcp://muse-server-system@127.0.0.1:2552/user/ServerActor") => [
+		connectionURL = new TextField("akka.tcp://muse-server-system@127.0.0.1:2552/user/ServerActor") => [
 			HBox.setHgrow(it, Priority.ALWAYS)
+			setId("connectionURL")
 		]
-		val connectionTree = new ConnectionTree(actorSystem, connections) => [
+		connectionTree = new ConnectionTree() => [
 			VBox.setVgrow(it, Priority.ALWAYS)
+			setId("connections")
 		]
-		val connect = new Button("OK") => [
-			setOnAction [
-				actorSystem.actorSelection(connectionURL.getText()).resolveOne(Duration.ofSeconds(10)).thenAccept [
-					connectionTree.connectWith(it)
-				]
-			]
+		connect = new Button("OK") => [
+			setId("connect")
 		]
 		val connectionsPane = new VBox(new HBox(connectionURL, connect), connectionTree)
 		setLeft(connectionsPane)

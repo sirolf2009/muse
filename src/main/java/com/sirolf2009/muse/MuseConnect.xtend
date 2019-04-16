@@ -1,20 +1,16 @@
 package com.sirolf2009.muse
 
+import akka.actor.ActorRef
 import akka.actor.ActorSystem
-import com.sirolf2009.muse.event.Event
+import akka.actor.Props
 import java.io.Serializable
 import java.time.Duration
-import java.util.HashMap
 import java.util.UUID
-import org.eclipse.xtend.lib.annotations.Data
 import java.util.concurrent.TimeUnit
-import akka.actor.ActorRef
-import akka.event.Logging.LogEvent
-import akka.actor.Props
+import org.eclipse.xtend.lib.annotations.Data
+import akka.pattern.Patterns
 
 class MuseConnect {
-
-	static val connectionMap = new HashMap<ActorSystem, UUID>()
 
 	def static connect(ActorSystem system) {
 		connect(system, "127.0.0.1", 2552)
@@ -33,29 +29,10 @@ class MuseConnect {
 	}
 
 	def static connect(ActorSystem system, ActorRef remoteActor) {
-		system.actorSelection("/").resolveOne(Duration.ofSeconds(1)).thenAccept [ local |
-			try {
-				val connectionID = UUID.randomUUID()
-				remoteActor.tell(new NewAppConnection(connectionID, system.name()), local)
-				connectionMap.put(system, connectionID)
-				system.eventStream().subscribe(remoteActor, Event)
-				val loggingActor = system.actorOf(Props.create(MuseLoggingAdapter), "muse-logging")
-				system.eventStream().subscribe(loggingActor, LogEvent)
-				
-				system.getWhenTerminated().thenAcceptAsync [ termination |
-					remoteActor.tell(new DisconnectApp(connectionID), local)
-				]
-				Runtime.getRuntime().addShutdownHook(new Thread [
-					remoteActor.tell(new DisconnectApp(connectionID), local)
-				])
-			} catch(Exception e) {
-				e.printStackTrace()
-			}
-		].toCompletableFuture().get()
-	}
-
-	def static getConnection(ActorSystem system) {
-		return connectionMap.get(system)
+		val museClient = system.actorOf(Props.create(MuseAppClientActor, remoteActor), "muse")
+		if(!Patterns.ask(museClient, "initialized?", Duration.ofSeconds(1)).toCompletableFuture().get() as Boolean) {
+			throw new RuntimeException("Muse failed to initialize")
+		}
 	}
 
 	@Data static class NewAppConnection implements Serializable {

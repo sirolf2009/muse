@@ -6,6 +6,8 @@ import com.typesafe.config.ConfigFactory
 import javafx.application.Application
 import javafx.scene.Scene
 import javafx.stage.Stage
+import akka.actor.Props
+import com.sirolf2009.muse.client.MuseClientActor
 
 class MuseClient extends Application {
 	
@@ -14,7 +16,8 @@ class MuseClient extends Application {
 		
 //		InternalMuse.startInternalMuse(system)
 		
-		val main = new ClientScreen(system)
+		val main = new ClientScreen()
+		system.actorOf(Props.create(MuseClientActor, main), "muse-client")
 		
 		val scene = new Scene(main, 1024, 768)
 		scene.getStylesheets().add("/styles.css")

@@ -145,6 +145,10 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 
 		return pane
 	}
+	
+	override toString() {
+		'''ServerCell [«actor»]'''
+	}
 
 	def asWord(int level) {
 		switch (level) {

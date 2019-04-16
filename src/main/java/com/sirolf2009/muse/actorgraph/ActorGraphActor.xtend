@@ -39,6 +39,9 @@ import javafx.util.Duration
 import org.eclipse.xtend.lib.annotations.Data
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 
+import static extension com.sirolf2009.muse.extensions.ActorPathExtensions.isUser
+import static extension com.sirolf2009.muse.extensions.ActorPathExtensions.startsWith
+
 @FinalFieldsConstructor class ActorGraphActor extends AbstractActor {
 
 	val ActorGraph graph
@@ -72,8 +75,8 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 	override createReceive() {
 		return receiveBuilder().match(EventSpawn) [
 			try {
-				messages.add(it)
-				if(getActor().isDefined()) {
+				if(getActor().isDefined() && getActor().get().path().startsWith(#["user"]) && !getActor().get().path().startsWith(#["user", "muse"])) {
+					messages.add(it)
 					Platform.runLater [
 						val actor = getActor().get()
 						(0 ..< actor.path().elements().size()).forEach [index|
@@ -103,9 +106,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 			}
 		].match(EventMessage) [
 			messages.add(it)
-			val environment = getEnvelope().sender().path().getElements().get(0)
-			val environmentReceiver = getTarget().path().getElements().get(0)
-			if(environment.equals("user") && environmentReceiver.equals("user")) {
+			if(getEnvelope().sender().path().isUser() && getTarget().path().isUser()) {
 				val senderPath = getEnvelope().sender().path().getElements().join("/")
 				val senderCell = cells.get(senderPath)
 				val receiverPath = getTarget().path().getElements().join("/")

@@ -47,6 +47,12 @@ class MuseStandalone {
 	@Data static class GetConnections implements Serializable {
 	}
 
+	@Data static class SubscribeToConnections implements Serializable {
+	}
+
+	@Data static class UnsubscribeFromConnections implements Serializable {
+	}
+
 	@Data static class Connections implements Serializable {
 		List<NewAppConnection> connections
 	}
