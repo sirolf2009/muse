@@ -22,6 +22,8 @@ class ConnectionTree extends TreeView<ConnectionTreeItem> {
 					if(!empty && item !== null) {
 						item.getText().ifPresent[text| setText(text)]
 						item.getGraphic().ifPresent[graphic| setGraphic(graphic)]
+						item.getContextMenu().ifPresent[context| setContextMenu(context)]
+						item.getTooltip().ifPresent[tooltip| setTooltip(tooltip)]
 					}
 				}
 			}

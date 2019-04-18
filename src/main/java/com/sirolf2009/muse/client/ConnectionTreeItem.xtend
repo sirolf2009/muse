@@ -2,10 +2,13 @@ package com.sirolf2009.muse.client
 
 import akka.actor.ActorRef
 import com.sirolf2009.muse.MuseConnect.NewAppConnection
+import com.sirolf2009.util.TimeUtil
 import java.util.Optional
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.scene.Node
+import javafx.scene.control.ContextMenu
+import javafx.scene.control.Tooltip
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import org.eclipse.xtend.lib.annotations.Data
@@ -15,6 +18,14 @@ interface ConnectionTreeItem {
 	def Optional<String> getText()
 
 	def Optional<Node> getGraphic()
+	
+	def Optional<ContextMenu> getContextMenu() {
+		return Optional.empty()
+	}
+	
+	def Optional<Tooltip> getTooltip() {
+		return Optional.empty()		
+	}
 
 	@Data static class Servers implements ConnectionTreeItem {
 
@@ -69,6 +80,14 @@ interface ConnectionTreeItem {
 				setFitHeight(28)
 			]
 			return Optional.of(icon)
+		}
+		
+		override getTooltip() {
+			val tooltip = '''
+			Name: «connection.getActorSystem()»
+			Date: «TimeUtil.format(connection.getTimestamp())»
+			UUID: «connection.getID()»'''
+			return Optional.of(new Tooltip(tooltip))
 		}
 
 	}

@@ -3,12 +3,13 @@ package com.sirolf2009.muse
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.actor.Props
+import akka.pattern.Patterns
 import java.io.Serializable
 import java.time.Duration
+import java.util.Date
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import org.eclipse.xtend.lib.annotations.Data
-import akka.pattern.Patterns
 
 class MuseConnect {
 
@@ -38,6 +39,7 @@ class MuseConnect {
 	@Data static class NewAppConnection implements Serializable {
 		UUID ID
 		String actorSystem
+		Date timestamp = new Date()
 	}
 
 	@Data static class DisconnectApp implements Serializable {
