@@ -17,7 +17,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 	val Button connect
 
 	new() {
-		connections = new TabPane()		
+		connections = new TabPane()
 		setCenter(connections)
 		
 		connectionURL = new TextField("akka.tcp://muse-server-system@127.0.0.1:2552/user/ServerActor") => [

@@ -20,6 +20,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 	val CheckBox lock
 	
 	new() {
+		getStyleClass().add("map-background")
 		graph = new Graph() => [
 			getCanvas().getStyleClass().add("map-background")
 		]

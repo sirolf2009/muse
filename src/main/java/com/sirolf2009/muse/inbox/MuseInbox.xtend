@@ -15,7 +15,8 @@ import com.typesafe.config.Config
 import java.util.Date
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 import scala.Option
-import akka.actor.ActorPath
+
+import static extension com.sirolf2009.muse.extensions.ActorPathExtensions.isUser
 
 class MuseInbox implements MailboxType, ProducesMessageQueue<MuseInboxQueue> {
 	
@@ -23,7 +24,7 @@ class MuseInbox implements MailboxType, ProducesMessageQueue<MuseInboxQueue> {
 	}
 
 	override MessageQueue create(Option<ActorRef> owner, Option<ActorSystem> system) {
-		if(system.isDefined() && owner.isDefined() && owner.get().isUser()) {
+		if(system.isDefined() && owner.isDefined() && owner.get().path().isUser()) {
 			system.get().eventStream().publish(new EventSpawn(system.get(), new Date(), owner))
 			system.get().registerOnTermination[
 				system.get().eventStream().publish(new EventKill(system.get(), new Date(), owner))
@@ -32,18 +33,6 @@ class MuseInbox implements MailboxType, ProducesMessageQueue<MuseInboxQueue> {
 //			system.get().actorOf(Props.create(DeathWatcher, owner.get()), "DeathWatcher")
 		}
 		return new MuseInboxQueue(owner, system)
-	}
-	
-	def static isUser(ActorRef actorRef) {
-		return isUser(actorRef.path())
-	}
-	
-	def static isUser(ActorPath actorPath) {
-		val elements = actorPath.getElements()
-		if(elements.isEmpty()) {
-			return false
-		}
-		return elements.get(0).equals("user")
 	}
 	
 	@FinalFieldsConstructor static class DeathWatcher extends AbstractActor implements RequiresMessageQueue<UnboundedMailbox> {

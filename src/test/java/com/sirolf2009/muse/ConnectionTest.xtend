@@ -13,11 +13,12 @@ import org.junit.Test
 import org.testfx.framework.junit.ApplicationTest
 
 class ConnectionTest extends ApplicationTest {
-	
+
 	var ClientScreen main
 	
 	override start(Stage stage) throws Exception {
 		val system = ActorSystem.create("muse-client-system", ConfigFactory.load("client.conf"))
+		MuseInternal.startInternalMuse(system)
 		
 		main = new ClientScreen()
 		system.actorOf(Props.create(MuseClientActor, main), "muse-client")
@@ -55,11 +56,11 @@ class ConnectionTest extends ApplicationTest {
 		val instance = main.getConnections().getTabs().get(0).getContent() as Instance
 		Assert.assertEquals("3 nodes are displayed, user, counter and printer", 3, instance.getGraph().getGraph().getModel().getAllCells().size())
 		
-		Thread.sleep(1000)
+		Thread.sleep(100000)
 		
 		exampleApplication.get().terminate()
 		
-		Thread.sleep(2000)
+		Thread.sleep(200000)
 		
 		Assert.assertEquals("MuseExampleApp is no longer displayed", 0, main.getConnectionTree().getRoot().getChildren().get(0).getChildren().size())
 	}

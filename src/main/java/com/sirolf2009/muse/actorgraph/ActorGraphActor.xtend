@@ -41,6 +41,7 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 
 import static extension com.sirolf2009.muse.extensions.ActorPathExtensions.isUser
 import static extension com.sirolf2009.muse.extensions.ActorPathExtensions.startsWith
+import akka.actor.ActorPath
 
 @FinalFieldsConstructor class ActorGraphActor extends AbstractActor {
 
@@ -75,11 +76,11 @@ import static extension com.sirolf2009.muse.extensions.ActorPathExtensions.start
 	override createReceive() {
 		return receiveBuilder().match(EventSpawn) [
 			try {
-				if(getActor().isDefined() && getActor().get().path().startsWith(#["user"]) && !getActor().get().path().startsWith(#["user", "muse"])) {
+				if(getActor().isDefined() && getActor().get().path().shouldShow()) {
 					messages.add(it)
 					Platform.runLater [
 						val actor = getActor().get()
-						(0 ..< actor.path().elements().size()).forEach [index|
+						(0 ..< actor.path().elements().size()).forEach [ index |
 							try {
 								val name = actor.path().getElements().get(index)
 								val path = actor.path().getElements().take(index + 1).join("/")
@@ -106,7 +107,7 @@ import static extension com.sirolf2009.muse.extensions.ActorPathExtensions.start
 			}
 		].match(EventMessage) [
 			messages.add(it)
-			if(getEnvelope().sender().path().isUser() && getTarget().path().isUser()) {
+			if(getEnvelope().sender().path().shouldShow() && getTarget().path().shouldShow()) {
 				val senderPath = getEnvelope().sender().path().getElements().join("/")
 				val senderCell = cells.get(senderPath)
 				val receiverPath = getTarget().path().getElements().join("/")
@@ -135,12 +136,26 @@ import static extension com.sirolf2009.muse.extensions.ActorPathExtensions.start
 			graphActor.tell(new NavigateTo(messages.indexOf(getEventMessage())), getSelf())
 		].match(EventLog) [
 			try {
-				cells.get(getActor().path().getElements().join("/")).getLogging().add(it)
+				if(getActor().path().shouldShow()) {
+					cells.get(getActor().path().getElements().join("/")).getLogging().add(it)
+				}
 			} catch(Exception e) {
 				println(it)
 				e.printStackTrace()
 			}
 		].build()
+	}
+	
+	def static shouldShow(ActorPath path) {
+		return path.isUser() && !path.isMuse() && !path.isMuseDebug()
+	}
+	
+	def static isMuse(ActorPath path) {
+		return path.startsWith(#["user", "muse"])
+	}
+	
+	def static isMuseDebug(ActorPath path) {
+		return path.startsWith(#["user", "muse-debug"])
 	}
 
 	@Data @FinalFieldsConstructor static class ShowMessage implements GraphOperation, Serializable, IGraphic {

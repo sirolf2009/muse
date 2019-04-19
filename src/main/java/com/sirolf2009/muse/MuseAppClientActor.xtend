@@ -24,6 +24,9 @@ import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 		connectionMap.put(context().system(), connectionID)
 		
 		remoteActor.tell(new NewAppConnection(connectionID, context().system().name()), getSelf())
+		//TODO simply subscribing to events makes running multiple muses hard (i.e. muse-client and muse-internal) as they'll both get each others messages.
+		//Perhaps it would be better to not subscribe, but send them directly to the target
+		//Or, we do subscribe, but we include a field in every Event who their target is and then the target needs to filter out messages that aren't his
 		context().system().eventStream().subscribe(remoteActor, Event)
 		
 		logging = context().actorOf(Props.create(MuseLoggingAdapter), "logging")
